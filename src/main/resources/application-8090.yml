@@ -22,11 +22,11 @@ application:
       refresh-token:
         expiration: 604800000 # 7 days
 server:
-  port: 8088
+  port: 8090
 
 bezkoder:
   openapi:
-    dev-url: http://localhost:8088
+    dev-url: http://localhost:8090
     prod-url: https://localhost:8080
 
 logging:

@@ -13,7 +13,6 @@ spring:
     database: postgresql
   application:
     name: DemoService
-
 application:
   security:
     jwt:
@@ -22,22 +21,20 @@ application:
       refresh-token:
         expiration: 604800000 # 7 days
 server:
-  port: 8088
-
+  port: 8089
 bezkoder:
   openapi:
-    dev-url: http://localhost:8088
+    dev-url: http://localhost:8089
     prod-url: https://localhost:8080
-
 logging:
-    level:
-        org:
-        springframework:
-            security: DEBUG
-            web: DEBUG
-            data: DEBUG
-            hibernate: DEBUG
-            jpa: DEBUG
-            sql: DEBUG
-            jwt: DEBUG
-            bezkoder: DEBUG
+  level:
+    org:
+    springframework:
+      security: DEBUG
+      web: DEBUG
+      data: DEBUG
+      hibernate: DEBUG
+      jpa: DEBUG
+      sql: DEBUG
+      jwt: DEBUG
+      bezkoder: DEBUG
