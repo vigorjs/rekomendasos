@@ -1,4 +1,4 @@
-package com.virgo.todoapp.utils.advisers.exception;
+package com.virgo.todoapp.config.advisers.exception;
 
 public class ValidateException extends RuntimeException {
     public ValidateException(String message) {

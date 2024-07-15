@@ -1,7 +1,7 @@
-package com.virgo.todoapp.utils.advisers;
+package com.virgo.todoapp.config.advisers;
 
-import com.virgo.todoapp.utils.advisers.exception.NotFoundException;
-import com.virgo.todoapp.utils.advisers.exception.ValidateException;
+import com.virgo.todoapp.config.advisers.exception.NotFoundException;
+import com.virgo.todoapp.config.advisers.exception.ValidateException;
 import com.virgo.todoapp.utils.response.WebResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

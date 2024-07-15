@@ -27,16 +27,22 @@ public class Task{
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
+    @Column(name = "Date")
+    private Date date;
+
     @Column(name = "Deadline", nullable = true)
     private Date deadline;
 
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "userId")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoryId", nullable = true)
+    private Category category;
 
 }

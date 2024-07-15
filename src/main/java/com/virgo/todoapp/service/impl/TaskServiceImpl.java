@@ -1,61 +1,62 @@
 package com.virgo.todoapp.service.impl;
 
-import com.virgo.todoapp.utils.advisers.exception.AuthenticationException;
+import com.virgo.todoapp.service.AuthenticationService;
 import com.virgo.todoapp.utils.dto.TaskRequestDTO;
 import com.virgo.todoapp.entity.meta.Task;
 import com.virgo.todoapp.entity.meta.User;
 import com.virgo.todoapp.entity.enums.TaskStatus;
-import com.virgo.todoapp.utils.advisers.exception.NotFoundException;
+import com.virgo.todoapp.config.advisers.exception.NotFoundException;
 import com.virgo.todoapp.repo.TaskRepository;
-import com.virgo.todoapp.repo.UserRepository;
 import com.virgo.todoapp.service.TaskService;
-import com.virgo.todoapp.utils.response.WebResponse;
-import com.virgo.todoapp.utils.response.WebResponseError;
+import com.virgo.todoapp.utils.specification.TaskSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
+    private final AuthenticationService authService;
 
     @Override
     public Task create(TaskRequestDTO req) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new AuthenticationException("Unauthorized, silahkan login"));
+        User user = authService.getUserAuthenticated();
 
         Task task = Task.builder()
                 .name(req.getName())
                 .createdAt(Date.from(Instant.now()))
+                .date(req.getDate())
                 .deadline(req.getDeadline())
                 .status(TaskStatus.ON_PROGRESS)
                 .user(user)
                 .build();
+
         taskRepository.save(task);
         return task;
     }
 
     @Override
-    public Page<Task> getAll(Pageable pageable) {
-        return taskRepository.findAll(pageable);
+    public Page<Task> getAll(Pageable pageable, String name) {
+        Specification<Task> spec = TaskSpecification.getSpecification(name);
+        return taskRepository.findAll(spec, pageable);
     }
 
     @Override
     public Task getById(Integer id) {
-        return taskRepository.findById(id).orElseThrow( () -> new RuntimeException("Task Not Found"));
+        Task task = taskRepository.findById(id).orElseThrow( () -> new RuntimeException("Task Not Found"));
+
+        if (!Objects.equals(task.getUser(), authService.getUserAuthenticated())){
+            throw new RuntimeException("User not valid");
+        }
+
+        return task;
     }
 
     @Override
@@ -65,6 +66,26 @@ public class TaskServiceImpl implements TaskService {
         } else {
             throw new NotFoundException("Task dengan ID " + id + " tidak ditemukan");
         }
+    }
+
+    @Override
+    public Task updateById(Integer id, TaskRequestDTO req){
+        Task task = getById(id);
+
+        if (req.getName() != null && !req.getName().isEmpty()) {
+            task.setName(req.getName());
+        }
+        if (req.getDate() != null) {
+            task.setDate(req.getDate());
+        }
+        if (req.getDeadline() != null) {
+            task.setDeadline(req.getDeadline());
+        }
+        if (req.getStatus() != null) {
+            task.setStatus(req.getStatus());
+        }
+
+        return taskRepository.save(task);
     }
 
 }

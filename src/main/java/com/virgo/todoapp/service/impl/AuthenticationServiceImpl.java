@@ -2,6 +2,7 @@ package com.virgo.todoapp.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virgo.todoapp.config.JwtService;
+import com.virgo.todoapp.config.advisers.exception.AuthenticationException;
 import com.virgo.todoapp.utils.dto.AuthenticationRequestDTO;
 import com.virgo.todoapp.utils.dto.AuthenticationResponseDTO;
 import com.virgo.todoapp.utils.dto.RegisterRequestDTO;
@@ -18,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
 
     @Override
     public AuthenticationResponseDTO register(RegisterRequestDTO request) {
@@ -120,5 +124,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+    }
+
+    @Override
+    public User getUserAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new AuthenticationException("Unauthorized, silahkan login"));
+        return user;
     }
 }

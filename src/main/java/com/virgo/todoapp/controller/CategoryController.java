@@ -1,7 +1,7 @@
 package com.virgo.todoapp.controller;
 
-import com.virgo.todoapp.utils.dto.TaskRequestDTO;
-import com.virgo.todoapp.service.TaskService;
+import com.virgo.todoapp.service.CategoryService;
+import com.virgo.todoapp.utils.dto.CategoryRequestDTO;
 import com.virgo.todoapp.utils.response.PaginationResponse;
 import com.virgo.todoapp.utils.response.Response;
 import com.virgo.todoapp.utils.response.WebResponse;
@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -19,36 +20,33 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/task")
+@RequestMapping("/api/v1/category")
 @RestControllerAdvice
-@Tag(name = "Task", description = "Task management APIs")
-public class TaskController {
-    private final TaskService taskService;
+@RequiredArgsConstructor
+@Tag(name = "Category", description = "Category Management APIs")
+public class CategoryController {
+    private final CategoryService categoryService;
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
-
-    @Operation(summary = "Create a new task", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Create a new Category", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Task berhasil dibuat!", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
+            @ApiResponse(responseCode = "200", description = "Category berhasil dibuat!", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "404", description = "Not Found", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = { @Content(schema = @Schema()) })
     })
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody TaskRequestDTO req) {
+    public ResponseEntity<?> create(@RequestBody CategoryRequestDTO req) {
         return Response.renderJSON(
-                taskService.create(req),
-                "Task berhasil dibuat!",
+                categoryService.create(req),
+                "Category berhasil dibuat!",
                 HttpStatus.CREATED
         );
     }
 
-    @Operation(summary = "Get all task", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get all Category", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Berhasil get all Task", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
+            @ApiResponse(responseCode = "200", description = "Berhasil get all Category", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "404", description = "Not Found", content = { @Content(schema = @Schema()) }),
@@ -56,12 +54,12 @@ public class TaskController {
     })
     @GetMapping
     public ResponseEntity<?> getAll(@PageableDefault Pageable pageable) {
-        return Response.renderJSON(new PaginationResponse<>(taskService.getAll(pageable)));
+        return Response.renderJSON(new PaginationResponse<>(categoryService.getAll(pageable)));
     }
 
-    @Operation(summary = "Get task by ID", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get Category by ID", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Berhasil get Task", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
+            @ApiResponse(responseCode = "200", description = "Berhasil get Category", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "404", description = "Not Found", content = { @Content(schema = @Schema()) }),
@@ -69,12 +67,12 @@ public class TaskController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Integer id) {
-        return Response.renderJSON(taskService.getById(id));
+        return Response.renderJSON(categoryService.getById(id));
     }
 
-    @Operation(summary = "Delete task by ID", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Delete Category by ID", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Task berhasil dihapus", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
+            @ApiResponse(responseCode = "200", description = "Category berhasil dihapus", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "404", description = "Not Found", content = { @Content(schema = @Schema()) }),
@@ -82,22 +80,22 @@ public class TaskController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        taskService.delete(id);
-        return Response.renderJSON(null,"Task berhasil dihapus", HttpStatus.OK);
+        categoryService.delete(id);
+        return Response.renderJSON(null,"Category berhasil dihapus", HttpStatus.OK);
     }
 
-    @Operation(summary = "Update task by ID", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Update Category by ID", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Task berhasil diupdate", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
+            @ApiResponse(responseCode = "200", description = "Category berhasil diupdate", content = { @Content(schema = @Schema(implementation = WebResponse.class)) }),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "404", description = "Not Found", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = { @Content(schema = @Schema()) })
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateById(@PathVariable Integer id, @RequestBody TaskRequestDTO req){
+    public ResponseEntity<?> updateById(@PathVariable Integer id, @RequestBody CategoryRequestDTO req){
         return Response.renderJSON(
-                taskService.updateById(id, req),
+                categoryService.updateById(id, req),
                 "Berhasil diupdate!!"
         );
     }
