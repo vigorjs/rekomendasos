@@ -1,6 +1,7 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/java_todo_db?createDatabaseIfNotExist=true
+#    url: jdbc:postgresql://localhost:5432/java_todo_db?createDatabaseIfNotExist=true
+    url: jdbc:postgresql://localhost:5432/java_todo_db
     username: postgres
     password: Batassuci123#
   jpa:
@@ -12,7 +13,7 @@ spring:
         format_sql: true
     database: postgresql
   application:
-    name: DemoService
+    name: java-todo-app
 
 application:
   security:

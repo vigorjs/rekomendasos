@@ -1,6 +1,7 @@
 package com.virgo.todoapp.utils.specification;
 
 import com.virgo.todoapp.entity.meta.Task;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -10,6 +11,7 @@ import java.util.List;
 public class TaskSpecification {
     public static Specification<Task> getSpecification(String name) {
         return (root, query, criteriaBuilder) -> {
+
             List<Predicate> predicates = new ArrayList<>();
 
             if (name != null && !name.isBlank()) {

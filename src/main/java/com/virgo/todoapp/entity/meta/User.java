@@ -1,5 +1,6 @@
 package com.virgo.todoapp.entity.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.virgo.todoapp.entity.enums.Gender;
 import com.virgo.todoapp.entity.enums.Role;
 import jakarta.persistence.*;
@@ -50,10 +51,12 @@ public class User implements UserDetails {
     private Role role;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Token> tokens;
 
-    @OneToMany(mappedBy = "user")
-    private List<Task> tasks;
+//    @OneToMany(mappedBy = "user")
+//    @JsonIgnore
+//    private List<Task> tasks;
 
     //method
     @Override

@@ -1,5 +1,6 @@
 package com.virgo.todoapp.entity.meta;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.virgo.todoapp.entity.enums.TaskStatus;
 import jakarta.persistence.*;
@@ -21,27 +22,29 @@ public class Task{
     @GeneratedValue
     private Integer id;
 
-    @Column(name = "Name")
+    @Column(name = "name")
     private String name;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @Temporal(TemporalType.DATE)
     private Date createdAt;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Column(name = "Date")
     private Date date;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Column(name = "Deadline", nullable = true)
     private Date deadline;
 
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "categoryId", nullable = true)
     private Category category;
 

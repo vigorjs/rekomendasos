@@ -55,8 +55,8 @@ public class TaskController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = { @Content(schema = @Schema()) })
     })
     @GetMapping
-    public ResponseEntity<?> getAll(@PageableDefault Pageable pageable) {
-        return Response.renderJSON(new PaginationResponse<>(taskService.getAll(pageable)));
+    public ResponseEntity<?> getAll(@PageableDefault Pageable pageable, @RequestParam(required = false) String name) {
+        return Response.renderJSON(new PaginationResponse<>(taskService.getAll(pageable, name)));
     }
 
     @Operation(summary = "Get task by ID", security = @SecurityRequirement(name = "bearerAuth"))

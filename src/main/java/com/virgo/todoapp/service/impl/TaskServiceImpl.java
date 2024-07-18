@@ -1,6 +1,8 @@
 package com.virgo.todoapp.service.impl;
 
+import com.virgo.todoapp.entity.meta.Category;
 import com.virgo.todoapp.service.AuthenticationService;
+import com.virgo.todoapp.service.CategoryService;
 import com.virgo.todoapp.utils.dto.TaskRequestDTO;
 import com.virgo.todoapp.entity.meta.Task;
 import com.virgo.todoapp.entity.meta.User;
@@ -24,6 +26,7 @@ import java.util.Objects;
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final AuthenticationService authService;
+    private final CategoryService categoryService;
 
     @Override
     public Task create(TaskRequestDTO req) {
@@ -37,6 +40,10 @@ public class TaskServiceImpl implements TaskService {
                 .status(TaskStatus.ON_PROGRESS)
                 .user(user)
                 .build();
+
+        if (req.getCategory() != null) {
+            task.setCategory(categoryService.getById(req.getCategory()));
+        }
 
         taskRepository.save(task);
         return task;
@@ -82,7 +89,10 @@ public class TaskServiceImpl implements TaskService {
             task.setDeadline(req.getDeadline());
         }
         if (req.getStatus() != null) {
-            task.setStatus(req.getStatus());
+            task.setStatus(TaskStatus.valueOf(req.getStatus().toString()));
+        }
+        if (req.getCategory() != null) {
+            task.setCategory(categoryService.getById(req.getCategory()));
         }
 
         return taskRepository.save(task);

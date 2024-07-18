@@ -46,7 +46,7 @@ public class OpenAPIConfig implements WebMvcConfigurer {
                 .title("Demo Service API")
                 .version("1.0")
                 .contact(contact)
-                .description("This API exposes endpoints to manage demo.").termsOfService("https://www.pasanabeysekara.com")
+                .description("This API exposes endpoints to manage demo.").termsOfService("https://vigorjs.me")
                 .license(mitLicense);
 
         return new OpenAPI().info(info).servers(List.of(devServer, prodServer))

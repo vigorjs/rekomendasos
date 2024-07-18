@@ -1,5 +1,6 @@
 package com.virgo.todoapp.entity.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.virgo.todoapp.entity.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,8 @@ public class Token {
 
     public boolean expired;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     public User user;
 }

@@ -1,6 +1,7 @@
 package com.virgo.todoapp.utils.dto;
 
 import com.virgo.todoapp.entity.enums.TaskStatus;
+import com.virgo.todoapp.entity.meta.Category;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -27,5 +28,8 @@ public class TaskRequestDTO {
 
     @Nullable
     private TaskStatus status;
+
+    @Nullable
+    private Integer category;
 
 }
