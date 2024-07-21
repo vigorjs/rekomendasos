@@ -40,12 +40,14 @@ public class Task{
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "userId")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "categoryId", nullable = true)
     private Category category;
+
 
 }

@@ -51,7 +51,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Page<Task> getAll(Pageable pageable, String name) {
-        Specification<Task> spec = TaskSpecification.getSpecification(name);
+        User currentUser = authService.getUserAuthenticated();
+        Specification<Task> spec = TaskSpecification.getSpecification(currentUser, name);;
         return taskRepository.findAll(spec, pageable);
     }
 

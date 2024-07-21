@@ -2,14 +2,18 @@ package com.virgo.todoapp.service.impl;
 
 import com.virgo.todoapp.config.advisers.exception.NotFoundException;
 import com.virgo.todoapp.entity.meta.Category;
+import com.virgo.todoapp.entity.meta.Task;
 import com.virgo.todoapp.entity.meta.User;
 import com.virgo.todoapp.repo.CategoryRepository;
 import com.virgo.todoapp.service.AuthenticationService;
 import com.virgo.todoapp.service.CategoryService;
 import com.virgo.todoapp.utils.dto.CategoryRequestDTO;
+import com.virgo.todoapp.utils.specification.CategorySpecification;
+import com.virgo.todoapp.utils.specification.TaskSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,8 +36,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Page<Category> getAll(Pageable pageable) {
-        return categoryRepository.findAll(pageable);
+    public Page<Category> getAll(Pageable pageable, String name) {
+        User currentUser = authService.getUserAuthenticated();
+        Specification<Category> spec = CategorySpecification.getSpecification(currentUser, name);;
+        return categoryRepository.findAll(spec, pageable);
     }
 
     @Override

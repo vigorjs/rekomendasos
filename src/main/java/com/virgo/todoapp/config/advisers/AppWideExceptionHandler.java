@@ -37,6 +37,6 @@ public class AppWideExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity handleAuthenticationException(AuthenticationException e) {
-        return new ResponseEntity(new WebResponse("Unauthorized", HttpStatus.UNAUTHORIZED, e.getMessage()), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity(new WebResponse("Invalid login Credetiantials", HttpStatus.UNAUTHORIZED, e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 }
