@@ -10,13 +10,14 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class VoucherDTO {
-    @NotBlank(message = "User must no be blank")
-    private Integer user_id;
+    @NotBlank(message = "Name must no be blank")
+    private String name;
 
-    @NotBlank(message = "Voucher must no be blank")
-    private Integer voucher_id;
+    @NotBlank(message = "Name must no be blank")
+    @Min(value = 0, message = "Price cannot be a negative value")
+    private Integer price;
 
-    @NotBlank(message = "Voucher must no be blank")
-    @Min(value = 0, message = "Voucher Quantity cannot be a negative value")
-    private Integer voucherQuantity;
+    @NotBlank(message = "Name must no be blank")
+    @Min(value = 0, message = "Quantity cannot be a negative value")
+    private Integer quantity;
 }
