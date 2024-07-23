@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User implements UserDetails {
 
     @Id
@@ -49,6 +49,12 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "point")
+    private long point = 0;
+
+    @Column(name = "photo")
+    private String photo;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
