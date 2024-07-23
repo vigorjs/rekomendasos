@@ -30,11 +30,11 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user_id;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "place_id")
-    private Place place_id;
+    private Place place;
 
 
 }

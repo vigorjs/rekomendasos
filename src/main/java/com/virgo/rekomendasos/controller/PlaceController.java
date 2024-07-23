@@ -1,5 +1,6 @@
 package com.virgo.rekomendasos.controller;
 
+import com.virgo.rekomendasos.service.PlaceService;
 import com.virgo.rekomendasos.utils.response.WebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,7 +24,7 @@ import java.util.List;
 public class PlaceController {
 
     @Autowired
-    private final Object service;
+    private final PlaceService placeService;
 
     @Operation(summary = "Get all places", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
@@ -62,7 +63,7 @@ public class PlaceController {
     })
     @GetMapping("/places")
     public ResponseEntity<?> findAllPlaces() {
-        return null;
+        return ResponseEntity.ok(placeService.getAllPlacesFromApi());
     }
 
 
