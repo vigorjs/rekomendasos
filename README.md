@@ -12,12 +12,12 @@ and Swagger UI for API documentation using OpenAPI 3.
 
 1. Clone this repository.
    ```
-   git clone https://github.com/pasan1/Spring-Boot-3-with-spring-security-and-swagger-ui.git
+   git clone git@github.com:vigorjs/rekomendasos.git
    ```
 
 2. Navigate to the project folder.
     ```
-   cd spring-boot-security-swagger
+   cd rekomendasos
    ```
 
 3. Build the project.
