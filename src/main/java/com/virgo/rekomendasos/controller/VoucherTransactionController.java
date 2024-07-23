@@ -22,8 +22,8 @@ import java.util.List;
 @Tag(name = "Voucher Transaction", description = "Voucher Transaction management APIs")
 public class VoucherTransactionController {
 
-    @Autowired
-    private final Object service;
+//    @Autowired
+//    private final Object service;
 
     @Operation(summary = "Get all voucher transactions",security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({

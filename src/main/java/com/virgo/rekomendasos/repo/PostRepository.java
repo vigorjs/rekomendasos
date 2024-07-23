@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
-    @Query("SELECT * FROM posts p WHERE p.user_id = :userId")
+    @Query(value = "SELECT * FROM post WHERE user_id = :userId", nativeQuery = true)
     List<Post> findAllByUserId(@Param("userId") Integer userId);
 }

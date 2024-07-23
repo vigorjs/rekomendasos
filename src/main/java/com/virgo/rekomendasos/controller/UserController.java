@@ -22,8 +22,8 @@ import java.util.List;
 @Tag(name = "User", description = "User management APIs")
 public class UserController {
 
-    @Autowired
-    private final Object service;
+//    @Autowired
+//    private final Object service;
 
     @Operation(summary = "Get all users", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
