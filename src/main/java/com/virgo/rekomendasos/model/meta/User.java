@@ -54,7 +54,10 @@ public class User implements UserDetails {
     private long point = 0;
 
     @Column(name = "photo")
-    private String photo;
+    private String photo = "https://ui.shadcn.com/avatars/03.png";
+
+    @Column(name = "cloudinaryImageId")
+    private String cloudinaryImageId;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore

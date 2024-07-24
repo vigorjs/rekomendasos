@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Service
@@ -29,8 +30,8 @@ public class CloudinaryServiceImpl implements CloudinaryService {
                     .url(url)
                     .build();
 
-        } catch (Exception e) {
-            throw new InternalException("Failed to upload File");
+        } catch (IOException e) {
+            throw new InternalException(e.getMessage());
         }
     }
 }
