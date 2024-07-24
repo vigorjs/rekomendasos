@@ -31,10 +31,10 @@ public class FileUploadUtil {
             throw new IllegalArgumentException("max file size is 2MB");
         }
 
-        final String fileName = file.getName();
-        final String extension = FilenameUtils.getExtension(fileName);
+        final String fileName = file.getOriginalFilename();
+//        final String extension = FilenameUtils.getExtension(fileName);
 
-        if (!isAllowedExtension(extension, pattern)){
+        if (!isAllowedExtension(fileName, pattern)){
             throw new IllegalArgumentException("extensi image salah");
         }
     }

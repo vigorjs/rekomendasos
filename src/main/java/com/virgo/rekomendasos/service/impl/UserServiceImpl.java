@@ -4,20 +4,21 @@ import com.virgo.rekomendasos.config.JwtService;
 import com.virgo.rekomendasos.config.advisers.exception.NotFoundException;
 import com.virgo.rekomendasos.model.enums.Role;
 import com.virgo.rekomendasos.model.meta.User;
-import com.virgo.rekomendasos.repo.TokenRepository;
 import com.virgo.rekomendasos.repo.UserRepository;
 import com.virgo.rekomendasos.service.AuthenticationService;
+import com.virgo.rekomendasos.service.CloudinaryService;
 import com.virgo.rekomendasos.service.UserService;
-import com.virgo.rekomendasos.utils.dto.AuthenticationResponseDTO;
+import com.virgo.rekomendasos.utils.FileUploadUtil;
 import com.virgo.rekomendasos.utils.dto.RegisterRequestDTO;
+import com.virgo.rekomendasos.utils.response.CloudinaryResponse;
 import com.virgo.rekomendasos.utils.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -26,9 +27,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
+    private final CloudinaryService cloudinaryService;
 
     @Override
-    public AuthenticationResponseDTO create(RegisterRequestDTO req) {
+    public User create(RegisterRequestDTO req) {
         User user = User.builder()
                 .firstname(req.getFirstname())
                 .lastname(req.getLastname())
@@ -39,14 +41,7 @@ public class UserServiceImpl implements UserService {
                 .gender(req.getGender() != null ? req.getGender() : null)
                 .role(req.getRole() != null ? req.getRole() : Role.USER)
                 .build();
-        var savedUser = userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        authenticationService.saveUserToken(savedUser, jwtToken);
-        return AuthenticationResponseDTO.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+        return userRepository.save(user);
     }
 
     @Override
@@ -71,11 +66,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateById(RegisterRequestDTO req) {
+    public User updateById(Integer id, RegisterRequestDTO req) {
+        User user = getById(id);
+
+        updateUserDetails(user, req);
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User update(RegisterRequestDTO req) {
 
         User currentUser = authenticationService.getUserAuthenticated();
         User user = getById(currentUser.getId());
 
+        updateUserDetails(user, req);
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public void uploadImage(MultipartFile file){
+        User currentUser = authenticationService.getUserAuthenticated();
+        User user = getById(currentUser.getId());
+
+        FileUploadUtil.assertAllowed(file, FileUploadUtil.IMAGE_PATTERN);
+
+        String fileName = FileUploadUtil.getFileName(file.getOriginalFilename());
+        CloudinaryResponse response = cloudinaryService.uploadFile(file, fileName);
+
+        user.setPhoto(response.getUrl());
+        user.setCloudinaryImageId(response.getPublicId());
+        userRepository.save(user);
+    }
+
+    private void updateUserDetails(User user, RegisterRequestDTO req) {
         if (req.getAddress() != null && !req.getAddress().isEmpty()) {
             user.setAddress(req.getAddress());
         }
@@ -100,7 +125,5 @@ public class UserServiceImpl implements UserService {
         if (req.getPassword() != null && !req.getPassword().isEmpty()) {
             user.setPassword(req.getPassword());
         }
-
-        return user;
     }
 }
