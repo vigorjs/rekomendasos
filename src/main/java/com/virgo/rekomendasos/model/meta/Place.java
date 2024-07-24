@@ -1,7 +1,10 @@
 package com.virgo.rekomendasos.model.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -23,4 +26,11 @@ public class Place {
 
     @Column(name = "longitude", nullable = false)
     private double longitude;
+
+    @Column(name = "rating")
+    private Integer rating;
+
+    @OneToMany(mappedBy = "place")
+    @JsonIgnore
+    private List<Post> posts;
 }

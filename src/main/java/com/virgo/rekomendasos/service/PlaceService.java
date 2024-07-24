@@ -8,5 +8,16 @@ import java.util.List;
 public interface PlaceService {
     Place create(Place obj);
 
-    List<Place> getAllPlacesFromApi(); // <7>
+    Place findById(String id);
+
+    Place update(String id,Place obj);
+
+    void delete(String id);
+
+    List<Place> findAll(Integer limit); // <7>
+
+    List<Place> findAllPopularPlaces(Integer limit);
+
+    List<Place> getAllPlacesFromApi();
+
 }

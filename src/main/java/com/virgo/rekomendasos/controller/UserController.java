@@ -8,12 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -98,8 +95,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
-    @GetMapping("/user/{user_id}/users")
-    public ResponseEntity<?> findUsersByUserId(@PathVariable Integer user_id) {
+    @GetMapping("/user")
+    public ResponseEntity<?> findOneUser() {
         return null;
     }
 }
