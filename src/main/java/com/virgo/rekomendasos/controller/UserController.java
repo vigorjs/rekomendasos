@@ -119,7 +119,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
-    @GetMapping("/user/")
+    @GetMapping("/user")
     public ResponseEntity<?> getUser() {
 //        getUserAuth
         return Response.renderJSON(
