@@ -1,6 +1,7 @@
 package com.virgo.rekomendasos.utils.dto;
 
 import com.virgo.rekomendasos.model.enums.Gender;
+import com.virgo.rekomendasos.model.enums.Role;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,8 @@ public class RegisterRequestDTO {
     private String password;
 
     //disabled role request, sudah dihandle di service
-//    private Role role;
+    @Nullable
+    private Role role;
     @Nullable
     private Gender gender;
     @Nullable

@@ -6,18 +6,16 @@ import com.virgo.rekomendasos.utils.dto.AuthenticationResponseDTO;
 import com.virgo.rekomendasos.utils.dto.RegisterRequestDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 
-public interface AuthenticationService {
-
-    public AuthenticationResponseDTO register(RegisterRequestDTO request);
-
-    public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request);
-
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
-
-    public User getUserAuthenticated();
-
-    void saveUserToken(User user, String jwtToken);
+public interface UserService {
+    AuthenticationResponseDTO create(RegisterRequestDTO req);
+    Page<User> getAll(Pageable pageable, String name);
+    User getById(Integer id);
+    void delete(Integer id);
+    //    User update (fitur)
+    User updateById(RegisterRequestDTO req);
 }
