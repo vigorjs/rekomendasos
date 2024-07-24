@@ -3,6 +3,7 @@ package com.virgo.rekomendasos.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virgo.rekomendasos.config.JwtService;
 import com.virgo.rekomendasos.config.advisers.exception.AuthenticationException;
+import com.virgo.rekomendasos.config.advisers.exception.NotFoundException;
 import com.virgo.rekomendasos.utils.dto.AuthenticationRequestDTO;
 import com.virgo.rekomendasos.utils.dto.AuthenticationResponseDTO;
 import com.virgo.rekomendasos.utils.dto.RegisterRequestDTO;
@@ -78,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    public void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
@@ -129,7 +130,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public User getUserAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new AuthenticationException("Unauthorized, silahkan login"));
+        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new NotFoundException("Unauthorized, not found email hehehe"));
         return user;
     }
 }
