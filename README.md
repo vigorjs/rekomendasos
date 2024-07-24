@@ -1,6 +1,6 @@
-# Spring Boot 3 Project with Spring Security and Swagger UI Integration
+# Learningos javaos byos buildos someos Placeos Recommendos APIos appos usingos allos javaos implementationos practiceos
 
-This project is a Spring Boot 3 web application that integrates Spring Security for authentication and authorization,
+This project use a Spring Boot 3 web application that integrates Spring Security for authentication and authorization,
 and Swagger UI for API documentation using OpenAPI 3.
 
 ## Prerequisites
