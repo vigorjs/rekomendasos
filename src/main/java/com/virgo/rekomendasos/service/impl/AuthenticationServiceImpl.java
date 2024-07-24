@@ -78,7 +78,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    public void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
