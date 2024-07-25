@@ -10,7 +10,7 @@ import com.virgo.rekomendasos.service.CloudinaryService;
 import com.virgo.rekomendasos.service.UserService;
 import com.virgo.rekomendasos.utils.FileUploadUtil;
 import com.virgo.rekomendasos.utils.dto.RegisterRequestDTO;
-import com.virgo.rekomendasos.utils.response.CloudinaryResponse;
+import com.virgo.rekomendasos.utils.dto.restClientDto.CloudinaryResponse;
 import com.virgo.rekomendasos.utils.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
