@@ -7,6 +7,8 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class PlaceResponseDto {
 
@@ -18,6 +20,8 @@ public class PlaceResponseDto {
 
     @Getter
     @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     @Builder
     public static class Features {
         @JsonProperty("properties")
@@ -25,6 +29,8 @@ public class PlaceResponseDto {
 
         @Getter
         @Setter
+        @AllArgsConstructor
+        @NoArgsConstructor
         @Builder
         public static class Properties {
 

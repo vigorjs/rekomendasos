@@ -17,13 +17,13 @@ public interface PostService {
 
     void deleteById(Integer id);
 
-    Post findByUser(Integer user_id, Integer id);
+    Post findByUser(Integer id);
 
-    List<Post> findAllByUser(Integer user_id);
+    List<Post> findAllByUser();
 
-    Post createByUser(Integer user_id, PostDto obj);
+    Post createByUser(PostDto obj);
 
-    Post updateByUser(Integer user_id, Integer id, PostDto obj);
+    Post updateByUser(Integer id, PostDto obj);
 
-    void deleteByUser(Integer user_id, Integer id);
+    void deleteByUser(Integer id);
 }

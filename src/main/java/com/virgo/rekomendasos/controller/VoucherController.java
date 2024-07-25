@@ -8,12 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -98,8 +95,8 @@ public class VoucherController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
-    @GetMapping("/user/{user_id}/vouchers")
-    public ResponseEntity<?> getUserVoucherById(@PathVariable Integer user_id) {
+    @GetMapping("/user/vouchers")
+    public ResponseEntity<?> getUserVoucherById() {
         return null;
     }
 
@@ -111,8 +108,8 @@ public class VoucherController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
-    @GetMapping("/user/{user_id}/vouchers/{voucher_id}")
-    public ResponseEntity<?> getUserVoucherById(@PathVariable Integer user_id, @PathVariable Integer voucher_id) {
+    @GetMapping("/user/vouchers/{voucher_id}")
+    public ResponseEntity<?> getUserVoucherById(@PathVariable Integer voucher_id) {
         return null;
     }
 

@@ -25,8 +25,8 @@ public class Post {
     @Column(name = "picture")
     private String picture;
 
-    @Column(name = "star_review", nullable = false)
-    private Integer star_review;
+    @Column(name = "rating")
+    private Integer rating;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

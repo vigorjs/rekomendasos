@@ -21,12 +21,12 @@ public class PostDto {
     @JsonProperty("picture")
     private String picture;
 
-    @JsonProperty("star_review")
-    private Integer star_review;
+    @JsonProperty("rating")
+    private Integer rating;
 
     @JsonProperty("user_id")
-    private Integer user_id;
+    private Integer userId;
 
     @JsonProperty("place_id")
-    private String place_id;
+    private String placeId;
 }
