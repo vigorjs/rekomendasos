@@ -25,16 +25,16 @@ public class Post {
     @Column(name = "picture")
     private String picture;
 
-    @Column(name = "star_review", nullable = false)
-    private Integer star_review;
+    @Column(name = "rating")
+    private Integer rating;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user_id;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "place_id")
-    private Place place_id;
+    private Place place;
 
 
 }

@@ -18,4 +18,6 @@ public interface AuthenticationService {
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
     public User getUserAuthenticated();
+
+    void saveUserToken(User user, String jwtToken);
 }

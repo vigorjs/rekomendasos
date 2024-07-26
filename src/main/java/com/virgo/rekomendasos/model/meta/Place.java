@@ -1,7 +1,10 @@
 package com.virgo.rekomendasos.model.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -13,8 +16,7 @@ import lombok.*;
 @Builder
 public class Place {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -24,4 +26,11 @@ public class Place {
 
     @Column(name = "longitude", nullable = false)
     private double longitude;
+
+    @Column(name = "rating")
+    private Integer rating;
+
+    @OneToMany(mappedBy = "place")
+    @JsonIgnore
+    private List<Post> posts;
 }
