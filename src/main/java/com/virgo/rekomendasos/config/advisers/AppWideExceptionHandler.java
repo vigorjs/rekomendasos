@@ -3,44 +3,52 @@ package com.virgo.rekomendasos.config.advisers;
 import com.virgo.rekomendasos.config.advisers.exception.NotFoundException;
 import com.virgo.rekomendasos.config.advisers.exception.ValidateException;
 import com.virgo.rekomendasos.utils.response.WebResponse;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AccountStatusException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.naming.AuthenticationException;
-import java.nio.file.AccessDeniedException;
+//import java.nio.file.AccessDeniedException;
+import java.util.HashMap;
+import java.util.Map;
 
-@RestControllerAdvice
+@ControllerAdvice
 @CrossOrigin
 public class AppWideExceptionHandler {
     @ExceptionHandler(Exception.class)
-    public ResponseEntity handleException(Exception e) {
-        return new ResponseEntity(new WebResponse("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> handleException(Exception e) {
+        return new ResponseEntity<>(new WebResponse<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException(NotFoundException e) {
-        return new ResponseEntity(new WebResponse("Not Found", HttpStatus.NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> handleNotFoundException(NotFoundException e) {
+        return new ResponseEntity<>(new WebResponse<>("Not Found", HttpStatus.NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ValidateException.class)
-    public ResponseEntity handleValidationException(ValidateException e) {
-        return new ResponseEntity(new WebResponse("Request Tidak Sesuai", HttpStatus.BAD_REQUEST, e.getMessage()), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> handleValidationException(ValidateException e) {
+        return new ResponseEntity<>(new WebResponse<>("Request Tidak Sesuai", HttpStatus.BAD_REQUEST, e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity handleAccessDeniedException(AccessDeniedException e) {
-        return new ResponseEntity(new WebResponse("Access Denied", HttpStatus.FORBIDDEN, e.getMessage()), HttpStatus.FORBIDDEN);
-    }
+//    @ExceptionHandler(AccessDeniedException.class)
+//    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+//        return new ResponseEntity<>(new WebResponse<>("Access Denied", HttpStatus.FORBIDDEN, e.getMessage()), HttpStatus.FORBIDDEN);
+//    }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity handleAuthenticationException(AuthenticationException e) {
-        return new ResponseEntity(new WebResponse("Invalid login Credetiantials", HttpStatus.UNAUTHORIZED, e.getMessage()), HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
+        return new ResponseEntity<>(new WebResponse<>("Invalid login Credetiantials", HttpStatus.UNAUTHORIZED, e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
-    /*
     // Bad Input Handler
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<?> handleRuntimeException(RuntimeException e){
@@ -58,11 +66,6 @@ public class AppWideExceptionHandler {
         return  new ResponseEntity<>("Error: The Account is Locked", HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex){
-        return new ResponseEntity<>("Error: You are not authorized to access this resource", HttpStatus.FORBIDDEN);
-    }
-
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex){
         return new ResponseEntity<>(
@@ -71,13 +74,6 @@ public class AppWideExceptionHandler {
         );
     }
 
-    @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<String> handleUnauthorizedUser(SignatureException ex){
-        return new ResponseEntity<>(
-                "JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.",
-                HttpStatus.FORBIDDEN
-        );
-    }
 
     // Method Argument Error Handler
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -90,11 +86,10 @@ public class AppWideExceptionHandler {
 
     // Internal Server Error Handler
     @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
-    public ResponseEntity<String> handleInternalServerError(HttpServerErrorException.InternalServerError ex){
+    public ResponseEntity<String> handleInternalServerError(HttpServerErrorException.InternalServerError ex) {
         return new ResponseEntity<>(
                 "500: Unknown Intenal Server Error",
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
-     */
 }
