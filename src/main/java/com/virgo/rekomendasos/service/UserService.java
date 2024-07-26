@@ -2,6 +2,8 @@ package com.virgo.rekomendasos.service;
 
 import com.virgo.rekomendasos.model.meta.User;
 import com.virgo.rekomendasos.utils.dto.RegisterRequestDTO;
+import com.virgo.rekomendasos.utils.dto.restClientDto.MidtransRequestDTO;
+import com.virgo.rekomendasos.utils.dto.restClientDto.MidtransResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,10 +16,11 @@ public interface UserService {
     User updateById(Integer id, RegisterRequestDTO req);
     //    User update (fitur)
     User update(RegisterRequestDTO req);
+    void updateBalance(User user, Long gross_amount);
 
     //Cloudinary
     void uploadImage(MultipartFile file);
 
     //Midtrans
-//    MidtransResponseDTO userTopup();
+    MidtransResponseDTO userTopup(MidtransRequestDTO req);
 }

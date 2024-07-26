@@ -14,11 +14,14 @@ import lombok.*;
 @ToString
 public class LogTransaction {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "order_id")
-    private String orderId;
+    private String order_id;
 
     @Column(name = "gross_amount")
-    private Integer grossAmount;
+    private Long gross_amount;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

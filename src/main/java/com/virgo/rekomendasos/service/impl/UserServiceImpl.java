@@ -1,16 +1,18 @@
 package com.virgo.rekomendasos.service.impl;
 
-import com.virgo.rekomendasos.config.JwtService;
 import com.virgo.rekomendasos.config.advisers.exception.NotFoundException;
 import com.virgo.rekomendasos.model.enums.Role;
+import com.virgo.rekomendasos.model.meta.LogTransaction;
 import com.virgo.rekomendasos.model.meta.User;
+import com.virgo.rekomendasos.repo.LogTransactionsRepository;
 import com.virgo.rekomendasos.repo.UserRepository;
-import com.virgo.rekomendasos.service.AuthenticationService;
-import com.virgo.rekomendasos.service.CloudinaryService;
-import com.virgo.rekomendasos.service.UserService;
+import com.virgo.rekomendasos.service.*;
 import com.virgo.rekomendasos.utils.FileUploadUtil;
+import com.virgo.rekomendasos.utils.dto.LogTransactionDto;
 import com.virgo.rekomendasos.utils.dto.RegisterRequestDTO;
 import com.virgo.rekomendasos.utils.dto.restClientDto.CloudinaryResponse;
+import com.virgo.rekomendasos.utils.dto.restClientDto.MidtransRequestDTO;
+import com.virgo.rekomendasos.utils.dto.restClientDto.MidtransResponseDTO;
 import com.virgo.rekomendasos.utils.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,14 +22,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
 @Service
-@RequiredArgsConstructor
+        @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private final MidtransService midtransService;
+    private final LogTransactionService logTransactionService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
     private final AuthenticationService authenticationService;
     private final CloudinaryService cloudinaryService;
+    private final LogTransactionsRepository logTransactionsRepository;
 
     @Override
     public User create(RegisterRequestDTO req) {
@@ -86,6 +95,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateBalance(User user, Long gross_amount) {
+        user.setPoint(user.getPoint() +gross_amount);
+        userRepository.save(user);
+    }
+
+    @Override
     public void uploadImage(MultipartFile file){
         User currentUser = authenticationService.getUserAuthenticated();
         User user = getById(currentUser.getId());
@@ -98,6 +113,25 @@ public class UserServiceImpl implements UserService {
         user.setPhoto(response.getUrl());
         user.setCloudinaryImageId(response.getPublicId());
         userRepository.save(user);
+    }
+
+    @Override
+    public MidtransResponseDTO userTopup(MidtransRequestDTO req) {
+
+        User user = authenticationService.getUserAuthenticated();
+
+        reqUserTopUpValidation(req);
+        MidtransResponseDTO midtransResponse = midtransService.chargePayment(req);
+
+        LogTransactionDto logTransaction = LogTransactionDto.builder()
+                .userId(user.getId())
+                .orderId(midtransResponse.getOrder_id())
+                .grossAmount(Long.valueOf(midtransResponse.getGross_amount().split("\\.")[0]))
+                .status(midtransResponse.getTransaction_status())
+                .build();
+        logTransactionService.create(logTransaction);
+
+        return midtransResponse;
     }
 
     private void updateUserDetails(User user, RegisterRequestDTO req) {
@@ -125,5 +159,32 @@ public class UserServiceImpl implements UserService {
         if (req.getPassword() != null && !req.getPassword().isEmpty()) {
             user.setPassword(req.getPassword());
         }
+    }
+
+    private void reqUserTopUpValidation(MidtransRequestDTO req){
+        if (req.getPayment_type() == null){
+            req.setPayment_type("bank_transfer");
+        }
+        if (req.getCustom_expiry() == null) {
+            req.setCustom_expiry(new MidtransRequestDTO.CustomExpiry());
+            req.getCustom_expiry().setUnit("minute");
+            req.getCustom_expiry().setExpiry_duration(60);
+            req.getCustom_expiry().setOrder_time(getFormattedOrderTime());
+        }
+
+        req.getTransaction_details().setOrder_id(getOrderId());
+    }
+
+    private String getFormattedOrderTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")
+                .withZone(ZoneId.of("Asia/Jakarta"));
+        return formatter.format(Instant.now());
+    }
+
+    private String getOrderId(){
+        Optional<LogTransaction> lastTransaction = logTransactionsRepository.findTopByOrderByIdDesc();
+        Long lastId = lastTransaction.map(LogTransaction::getId).orElse(0L);
+
+        return "TOPUP-" + (lastId + 1);
     }
 }

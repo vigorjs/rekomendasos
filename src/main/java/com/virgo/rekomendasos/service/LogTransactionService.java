@@ -10,13 +10,14 @@ public interface LogTransactionService {
 
     List<LogTransaction> findAll();
 
-    LogTransaction findByOrderId(String orderId);
+    LogTransaction findById(Long id);
 
-    LogTransaction update(String orderId, LogTransactionDto obj);
+    LogTransaction update(Long id, LogTransactionDto obj);
 
-    void deleteById(String orderId);
+    void deleteById(Long id);
 
-    LogTransaction findUserTransactionById(String orderId);
+    LogTransaction findUserTransactionById(Long id);
 
     List<LogTransaction> findAllUserTransactions();
+
 }

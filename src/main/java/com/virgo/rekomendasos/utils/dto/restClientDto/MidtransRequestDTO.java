@@ -2,6 +2,8 @@ package com.virgo.rekomendasos.utils.dto.restClientDto;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.PrePersist;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Null;
 import lombok.*;
 
 import java.time.Instant;
@@ -13,22 +15,24 @@ import java.time.Instant;
 public class MidtransRequestDTO {
 
     @Nullable
-    private String payment_type = "bank_transfer";
+    private String payment_type;
 
-    @Nullable
     private TransactionDetails transaction_details;
 
     private BankTransfer bank_transfer;
 
     @Nullable
-    private CustomExpiry custom_expiry = new CustomExpiry();
+    private CustomExpiry custom_expiry;
 
     @Getter
     @Setter
     @AllArgsConstructor
     public static class TransactionDetails {
+        @Nullable
         private String order_id;
-        private Integer gross_amount;
+
+        @Min(value = 10000, message = "Min Topup 10.000")
+        private Long gross_amount;
     }
 
     @Getter
@@ -43,19 +47,9 @@ public class MidtransRequestDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class CustomExpiry {
-        @Nullable
-        private String unit = "minute";
-
-        @Nullable
-        private Integer expiry_duration = 60;
-
-        @Nullable
-        private Long order_time;
-
-        @PrePersist
-        void onCreate() {
-            order_time = Instant.now().toEpochMilli();
-        }
+        private String unit;
+        private Integer expiry_duration;
+        private String order_time;
     }
 
 

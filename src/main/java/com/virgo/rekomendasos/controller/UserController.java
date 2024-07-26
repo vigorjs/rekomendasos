@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "User", description = "User management APIs")
 public class UserController {
 
-    private final MidtransService midtransService;
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
@@ -176,10 +176,9 @@ public class UserController {
     })
     @PostMapping("/user/topup")
     public ResponseEntity<?> userTopup(@RequestBody MidtransRequestDTO req) {
-
         return Response.renderJSON(
-                midtransService.chargePayment(req),
-                "Photo Uploaded",
+                userService.userTopup(req),
+                "Silahkan Bayar",
                 HttpStatus.OK
         );
     }

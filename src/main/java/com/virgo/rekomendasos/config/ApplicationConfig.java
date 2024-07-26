@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestClient;
 
 import java.util.Base64;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,6 +33,11 @@ public class ApplicationConfig {
     @Bean
     public RestClient restClient() {
         return RestClient.create();
+    }
+
+    @Bean
+    public ExecutorService executorService(){
+        return Executors.newFixedThreadPool(5);
     }
 
     @Bean

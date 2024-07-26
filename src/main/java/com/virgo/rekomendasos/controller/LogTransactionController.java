@@ -1,8 +1,8 @@
 package com.virgo.rekomendasos.controller;
 
 import com.virgo.rekomendasos.service.LogTransactionService;
-import com.virgo.rekomendasos.utils.response.Response;
-import com.virgo.rekomendasos.utils.response.WebResponse;
+import com.virgo.rekomendasos.utils.responseWrapper.Response;
+import com.virgo.rekomendasos.utils.responseWrapper.WebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -47,9 +47,9 @@ public class LogTransactionController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
-    @GetMapping("/admin/log-transactions/{orderId}")
-    public ResponseEntity<?> findByOrderId(@PathVariable String orderId) {
-        return Response.renderJSON(logTransactionService.findByOrderId(orderId), "Success", HttpStatus.OK);
+    @GetMapping("/admin/log-transactions/{id}")
+    public ResponseEntity<?> findByOrderId(@PathVariable Long id) {
+        return Response.renderJSON(logTransactionService.findById(id), "Success", HttpStatus.OK);
     }
 
     @Operation(summary = "Get log transaction by user", security = @SecurityRequirement(name = "bearerAuth"))
@@ -74,8 +74,8 @@ public class LogTransactionController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @GetMapping("/user/log-transactions/{id}")
-    public ResponseEntity<?> findUserTransactionById(@PathVariable String orderId) {
-        return Response.renderJSON(logTransactionService.findUserTransactionById(orderId), "Success", HttpStatus.OK);
+    public ResponseEntity<?> findUserTransactionById(@PathVariable Long id) {
+        return Response.renderJSON(logTransactionService.findUserTransactionById(id), "Success", HttpStatus.OK);
     }
 
 
