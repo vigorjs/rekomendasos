@@ -7,9 +7,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface VoucherService {
     Voucher create(VoucherDTO newVoucher);
-    Page<Voucher> getAll(Pageable pageable);
-    Voucher getById(Integer id);
+    Page<Voucher> findAll(Pageable pageable);
+    Page<Voucher> findAllVoucherByUserId(Pageable pageable);
+    Voucher findById(Integer id);
+    Voucher findByUserIdAndId(Integer id);
     Voucher updateById(Integer id, VoucherDTO updatedVoucher);
     void deleteById(Integer id);
-    Voucher use(Integer id, Integer quantity);
 }
