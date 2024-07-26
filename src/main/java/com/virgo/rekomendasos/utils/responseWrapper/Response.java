@@ -1,4 +1,4 @@
-package com.virgo.rekomendasos.utils.response;
+package com.virgo.rekomendasos.utils.responseWrapper;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

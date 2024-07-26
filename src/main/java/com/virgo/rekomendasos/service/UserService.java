@@ -6,8 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 public interface UserService {
     User create(RegisterRequestDTO req);
     Page<User> getAll(Pageable pageable, String name);
@@ -17,5 +15,9 @@ public interface UserService {
     //    User update (fitur)
     User update(RegisterRequestDTO req);
 
+    //Cloudinary
     void uploadImage(MultipartFile file);
+
+    //Midtrans
+//    MidtransResponseDTO userTopup();
 }

@@ -4,7 +4,7 @@ import com.virgo.rekomendasos.utils.dto.AuthenticationRequestDTO;
 import com.virgo.rekomendasos.utils.dto.AuthenticationResponseDTO;
 import com.virgo.rekomendasos.utils.dto.RegisterRequestDTO;
 import com.virgo.rekomendasos.service.AuthenticationService;
-import com.virgo.rekomendasos.utils.response.WebResponse;
+import com.virgo.rekomendasos.utils.responseWrapper.WebResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

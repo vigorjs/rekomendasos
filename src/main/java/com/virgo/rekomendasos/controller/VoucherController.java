@@ -1,6 +1,6 @@
 package com.virgo.rekomendasos.controller;
 
-import com.virgo.rekomendasos.utils.response.WebResponse;
+import com.virgo.rekomendasos.utils.responseWrapper.WebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

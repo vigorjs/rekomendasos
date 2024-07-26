@@ -67,6 +67,7 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Post> posts;
 
+
     //method
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

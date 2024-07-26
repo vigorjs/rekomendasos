@@ -23,6 +23,11 @@ application:
       expiration: 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
+
+midtrans:
+  server-key: SB-Mid-server-uqKv7R52RROgL1I0AX_DOcI6
+  api-url: https://api.sandbox.midtrans.com/v2/
+
 server:
   port: 8088
 
@@ -30,6 +35,7 @@ bezkoder:
   openapi:
     dev-url: http://localhost:8088
     prod-url: https://localhost:8080
+
 
 logging:
     level:
