@@ -39,11 +39,6 @@ public class AppWideExceptionHandler {
         return new ResponseEntity<>(new WebResponse<>("Request Tidak Sesuai", HttpStatus.BAD_REQUEST, e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
-//        return new ResponseEntity<>(new WebResponse<>("Access Denied", HttpStatus.FORBIDDEN, e.getMessage()), HttpStatus.FORBIDDEN);
-//    }
-
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
         return new ResponseEntity<>(new WebResponse<>("Invalid login Credetiantials", HttpStatus.UNAUTHORIZED, e.getMessage()), HttpStatus.UNAUTHORIZED);
