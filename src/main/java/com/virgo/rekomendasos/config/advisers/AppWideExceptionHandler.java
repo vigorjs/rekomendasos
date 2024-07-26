@@ -39,4 +39,62 @@ public class AppWideExceptionHandler {
     public ResponseEntity handleAuthenticationException(AuthenticationException e) {
         return new ResponseEntity(new WebResponse("Invalid login Credetiantials", HttpStatus.UNAUTHORIZED, e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
+
+    /*
+    // Bad Input Handler
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<?> handleRuntimeException(RuntimeException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    // Authentication Error Handler
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
+        return new ResponseEntity<>("Error: Invalid username or password", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccountStatusException.class)
+    public ResponseEntity<String> handleAccountStatusException(AccountStatusException ex) {
+        return  new ResponseEntity<>("Error: The Account is Locked", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex){
+        return new ResponseEntity<>("Error: You are not authorized to access this resource", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex){
+        return new ResponseEntity<>(
+                "Error: Your Session has expired, Please Login Again",
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<String> handleUnauthorizedUser(SignatureException ex){
+        return new ResponseEntity<>(
+                "JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.",
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    // Method Argument Error Handler
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+    // Internal Server Error Handler
+    @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
+    public ResponseEntity<String> handleInternalServerError(HttpServerErrorException.InternalServerError ex){
+        return new ResponseEntity<>(
+                "500: Unknown Intenal Server Error",
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+     */
 }
