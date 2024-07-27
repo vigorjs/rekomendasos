@@ -11,7 +11,7 @@ public class LogTransactionDto {
 
     private String orderId;
 
-    private Integer grossAmount;
+    private Long grossAmount;
 
     private String status;
 

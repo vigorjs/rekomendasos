@@ -1,12 +1,12 @@
 package com.virgo.rekomendasos.controller;
 
+import com.virgo.rekomendasos.utils.responseWrapper.PaginationResponse;
+import com.virgo.rekomendasos.utils.responseWrapper.Response;
+import com.virgo.rekomendasos.utils.responseWrapper.WebResponse;
 import com.virgo.rekomendasos.model.meta.Voucher;
 import com.virgo.rekomendasos.service.VoucherService;
 import com.virgo.rekomendasos.service.VoucherTransactionService;
 import com.virgo.rekomendasos.utils.dto.VoucherDTO;
-import com.virgo.rekomendasos.utils.response.PaginationResponse;
-import com.virgo.rekomendasos.utils.response.Response;
-import com.virgo.rekomendasos.utils.response.WebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

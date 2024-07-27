@@ -1,4 +1,4 @@
-package com.virgo.rekomendasos.utils.response;
+package com.virgo.rekomendasos.utils.responseWrapper;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

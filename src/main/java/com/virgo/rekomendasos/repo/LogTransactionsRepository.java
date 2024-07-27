@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface LogTransactionsRepository extends JpaRepository<LogTransaction, String> {
-    @Query(value = "SELECT * FROM log_transactions WHERE order_id = :orderId", nativeQuery = true)
-    Optional<LogTransaction> findByOrderId(String orderId);
+public interface LogTransactionsRepository extends JpaRepository<LogTransaction, Long> {
+
+    @Query("SELECT lt FROM LogTransaction lt ORDER BY lt.id DESC LIMIT 1")
+    Optional<LogTransaction> findTopByOrderByIdDesc();
 }

@@ -1,11 +1,13 @@
 package com.virgo.rekomendasos.controller;
 
 import com.virgo.rekomendasos.service.AuthenticationService;
+import com.virgo.rekomendasos.service.MidtransService;
 import com.virgo.rekomendasos.service.UserService;
 import com.virgo.rekomendasos.utils.dto.RegisterRequestDTO;
-import com.virgo.rekomendasos.utils.response.PaginationResponse;
-import com.virgo.rekomendasos.utils.response.Response;
-import com.virgo.rekomendasos.utils.response.WebResponse;
+import com.virgo.rekomendasos.utils.dto.restClientDto.MidtransRequestDTO;
+import com.virgo.rekomendasos.utils.responseWrapper.PaginationResponse;
+import com.virgo.rekomendasos.utils.responseWrapper.Response;
+import com.virgo.rekomendasos.utils.responseWrapper.WebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,16 +16,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -163,6 +162,23 @@ public class UserController {
         return Response.renderJSON(
                 null,
                 "Photo Uploaded",
+                HttpStatus.OK
+        );
+    }
+
+    @Operation(summary = "User Top up Point", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success!", content = {@Content(schema = @Schema(implementation = WebResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
+    })
+    @PostMapping("/user/topup")
+    public ResponseEntity<?> userTopup(@RequestBody MidtransRequestDTO req) {
+        return Response.renderJSON(
+                userService.userTopup(req),
+                "Silahkan Bayar",
                 HttpStatus.OK
         );
     }
