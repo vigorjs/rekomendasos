@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
-        @RequiredArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final MidtransService midtransService;
     private final LogTransactionService logTransactionService;
