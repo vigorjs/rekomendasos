@@ -2,8 +2,8 @@ package com.virgo.rekomendasos.controller;
 
 import com.virgo.rekomendasos.model.meta.Place;
 import com.virgo.rekomendasos.service.PlaceService;
-import com.virgo.rekomendasos.utils.response.Response;
-import com.virgo.rekomendasos.utils.response.WebResponse;
+import com.virgo.rekomendasos.utils.responseWrapper.Response;
+import com.virgo.rekomendasos.utils.responseWrapper.WebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")

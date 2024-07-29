@@ -1,4 +1,4 @@
-package com.virgo.rekomendasos.utils.response;
+package com.virgo.rekomendasos.utils.dto.restClientDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.virgo.rekomendasos.service;
 
-import com.virgo.rekomendasos.utils.response.CloudinaryResponse;
+import com.virgo.rekomendasos.utils.dto.restClientDto.CloudinaryResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface CloudinaryService {

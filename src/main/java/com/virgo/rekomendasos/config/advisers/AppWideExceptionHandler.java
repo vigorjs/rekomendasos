@@ -2,12 +2,10 @@ package com.virgo.rekomendasos.config.advisers;
 
 import com.virgo.rekomendasos.config.advisers.exception.NotFoundException;
 import com.virgo.rekomendasos.config.advisers.exception.ValidateException;
-import com.virgo.rekomendasos.utils.response.WebResponse;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
+import com.virgo.rekomendasos.utils.responseWrapper.WebResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpServerErrorException;
 
 import javax.naming.AuthenticationException;
-//import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -3,7 +3,7 @@ package com.virgo.rekomendasos.service.impl;
 import com.cloudinary.Cloudinary;
 import com.virgo.rekomendasos.config.advisers.exception.InternalException;
 import com.virgo.rekomendasos.service.CloudinaryService;
-import com.virgo.rekomendasos.utils.response.CloudinaryResponse;
+import com.virgo.rekomendasos.utils.dto.restClientDto.CloudinaryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
