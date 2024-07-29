@@ -1,6 +1,9 @@
 package com.virgo.rekomendasos.model.meta;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -17,24 +20,30 @@ public class Post {
     private Integer id;
 
     @Column(name = "title", length = 100, nullable = false)
+    @NotNull
     private String title;
 
-    @Column(name = "description")
+    @NotNull
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "picture")
     private String picture;
 
-    @Column(name = "rating")
+    @NotNull
+    @Min(0)
+    @Max(5)
+    @Column(name = "rating", nullable = false)
     private Integer rating;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @NotNull
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "place_id")
+    @NotNull
+    @JoinColumn(name = "place_id", nullable = false)
     private Place place;
-
 
 }

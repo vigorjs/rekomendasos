@@ -45,6 +45,7 @@ public class User implements UserDetails {
     @Column(name = "Email", nullable = false, length = 100, unique = true)
     private String email;
 
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)

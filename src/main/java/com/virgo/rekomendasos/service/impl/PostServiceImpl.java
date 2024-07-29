@@ -10,6 +10,7 @@ import com.virgo.rekomendasos.service.AuthenticationService;
 import com.virgo.rekomendasos.service.PlaceService;
 import com.virgo.rekomendasos.service.PostService;
 import com.virgo.rekomendasos.utils.dto.PostDto;
+import com.virgo.rekomendasos.utils.dto.UserPostDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,7 +122,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Post createByUser(PostDto obj) {
+    public Post createByUser(UserPostDto obj) {
         User user = authenticationService.getUserAuthenticated();
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
@@ -156,7 +157,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Post updateByUser(Integer id, PostDto obj) {
+    public Post updateByUser(Integer id, UserPostDto obj) {
         User user = authenticationService.getUserAuthenticated();
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
