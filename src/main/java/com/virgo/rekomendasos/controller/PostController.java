@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api")
@@ -62,8 +63,13 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @PostMapping("/admin/posts")
-    public ResponseEntity<?> create(@RequestBody PostDto obj) {
-        return Response.renderJSON(postService.create(obj), "Success", HttpStatus.OK);
+    public ResponseEntity<?> create(@RequestPart("postDto") PostDto obj,
+                                    @RequestPart(value = "file", required = false) MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            return ResponseEntity.ok(Response.renderJSON(postService.create(obj, file), "Success", HttpStatus.OK));
+        } else {
+            return ResponseEntity.ok(Response.renderJSON(postService.create(obj), "Success", HttpStatus.OK));
+        }
     }
 
     @Operation(summary = "Update post by id", security = @SecurityRequirement(name = "bearerAuth"))

@@ -25,6 +25,9 @@ public class Post {
     @Column(name = "picture")
     private String picture;
 
+    @Column(name = "cloudinaryImageId")
+    private String cloudinaryImageId;
+
     @Column(name = "rating")
     private Integer rating;
 

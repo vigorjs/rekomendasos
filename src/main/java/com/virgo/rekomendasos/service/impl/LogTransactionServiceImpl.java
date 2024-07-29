@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class LogTransactionServiceImpl implements LogTransactionService {
     }
 
     @Override
+    @Transactional
     public LogTransaction create(LogTransactionDto obj) {
         User user = userRepository.findById(obj.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
         LogTransaction logTransaction = LogTransaction.builder()
