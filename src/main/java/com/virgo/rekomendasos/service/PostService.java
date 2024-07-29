@@ -4,6 +4,7 @@ package com.virgo.rekomendasos.service;
 import com.virgo.rekomendasos.model.meta.Post;
 import com.virgo.rekomendasos.utils.dto.PostDto;
 import org.springframework.web.multipart.MultipartFile;
+import com.virgo.rekomendasos.utils.dto.UserPostDto;
 
 import java.util.List;
 
@@ -23,9 +24,9 @@ public interface PostService {
 
     List<Post> findAllByUser();
 
-    Post createByUser(PostDto obj);
+    Post createByUser(UserPostDto obj);
 
-    Post updateByUser(Integer id, PostDto obj);
+    Post updateByUser(Integer id, UserPostDto obj);
 
     void deleteByUser(Integer id);
 }

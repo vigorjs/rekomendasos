@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostDto {
+public class UserPostDto {
 
     @JsonProperty("title")
     @NotNull
@@ -26,15 +26,11 @@ public class PostDto {
     @JsonProperty("picture")
     private String picture;
 
-    @NotNull
-    @Max(5)
-    @Min(0)
     @JsonProperty("rating")
-    private Integer rating;
-
-    @JsonProperty("user_id")
     @NotNull
-    private Integer userId;
+    @Min(value = 0, message = "Rating must be between 0 and 5")
+    @Max(value = 5, message = "Rating must be between 0 and 5")
+    private Integer rating;
 
     @JsonProperty("place_id")
     @NotNull

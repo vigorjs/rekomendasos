@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class PlaceController {
     @Autowired
     private final PlaceService placeService;
 
-    @Operation(summary = "Get all places", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get all places by admin", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success!", content = {@Content(schema = @Schema(implementation = WebResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
@@ -53,6 +54,19 @@ public class PlaceController {
         return Response.renderJSON(placeService.findById(id), "Success", HttpStatus.OK);
     }
 
+    @Operation(summary = "Create a new place", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success!", content = {@Content(schema = @Schema(implementation = WebResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
+    })
+    @PostMapping("/admin/places")
+    public ResponseEntity<?> create(@RequestBody @Valid Place obj) {
+        return Response.renderJSON(placeService.create(obj), "Success", HttpStatus.OK);
+    }
+
     @Operation(summary = "Update a new place", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success!", content = {@Content(schema = @Schema(implementation = WebResponse.class))}),
@@ -62,7 +76,7 @@ public class PlaceController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @PutMapping("/admin/places/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @RequestBody Place obj) {
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody @Valid Place obj) {
         return Response.renderJSON(placeService.update(id, obj), "Success", HttpStatus.OK);
     }
 

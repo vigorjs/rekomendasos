@@ -29,7 +29,7 @@ public class PlaceServiceImpl implements PlaceService {
                 .name(obj.getName())
                 .latitude(obj.getLatitude())
                 .longitude(obj.getLongitude())
-                .rating(obj.getRating())
+                .rating(obj.getRating() != null ? obj.getRating() : 0)
                 .build();
 
         return placeRepository.save(place);
@@ -37,12 +37,25 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Override
     public Place findById(String id) {
-        return placeRepository.findById(id).orElseThrow(() -> new RuntimeException("Place not found"));
+        Place place = placeRepository.findById(id).orElse(null);
+        if (place == null) {
+            List<Place> placeListFromApi = getAllPlacesFromApi();
+            for (Place pl : placeListFromApi) {
+                if (pl.getId().equals(id)) {
+                    place = pl;
+                    break;
+                }
+            }
+        }
+        if (place == null) {
+            throw new RuntimeException("Place not found");
+        }
+        return place;
     }
 
     @Override
     public Place update(String id, Place obj) {
-        Place place = placeRepository.findById(id).orElseThrow(() -> new RuntimeException("Place not found"));
+        Place place = placeRepository.findById(id).orElseThrow(() -> new RuntimeException("Place can not be updated"));
         place.setName(obj.getName());
         place.setLatitude(obj.getLatitude());
         place.setLongitude(obj.getLongitude());
@@ -64,17 +77,24 @@ public class PlaceServiceImpl implements PlaceService {
         }
 
         List<Place> places = placeRepository.findAllWithLimit(this.limit);
+        List<Place> newPlaces = new ArrayList<>();
 
         var min = this.limit - places.size();
         if (min > 0) {
             List<Place> placeListFromApi = getAllPlacesFromApi();
 
             for (Place pl : placeListFromApi) {
-                if (!places.contains(pl)) {
-                    places.add(pl);
-                }
+               for (Place p : places) {
+                   if (!p.getId().equals(pl.getId())) {
+                       newPlaces.add(pl);
+                   }
+               }
             }
         }
+
+        places.addAll(newPlaces);
+
+        this.limit = 100;
 
         return places;
     }
@@ -92,6 +112,7 @@ public class PlaceServiceImpl implements PlaceService {
                 .sorted((p1, p2) -> p2.getRating().compareTo(p1.getRating()))
                 .limit(this.limit)
                 .toList());
+        List<Place> newPlaces = new ArrayList<>();
 
         int min = this.limit - sortedPlaces.size();
 
@@ -99,11 +120,17 @@ public class PlaceServiceImpl implements PlaceService {
             List<Place> placeListFromApi = getAllPlacesFromApi();
 
             for (Place pl : placeListFromApi) {
-                if (!sortedPlaces.contains(pl)) {
-                    sortedPlaces.add(pl);
+                for (Place p : sortedPlaces) {
+                    if (!p.getId().equals(pl.getId())) {
+                        newPlaces.add(pl);
+                    }
                 }
             }
         }
+
+        sortedPlaces.addAll(newPlaces);
+
+        this.limit = 100;
 
         return sortedPlaces;
     }
@@ -117,13 +144,6 @@ public class PlaceServiceImpl implements PlaceService {
                     .body(PlaceResponseDto.class);
 
             assert placeResponseDto != null;
-            for (var place : convertToListOfPlace(placeResponseDto)) {
-                Place existingPlace = placeRepository.findById(place.getId()).orElse(null);
-                if (existingPlace == null) {
-                    place.setRating(0);
-                    placeRepository.save(place);
-                }
-            }
 
             return convertToListOfPlace(placeResponseDto);
 
