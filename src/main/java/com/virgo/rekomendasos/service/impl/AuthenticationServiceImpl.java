@@ -48,6 +48,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .mobileNumber(request.getMobileNumber())
                 .gender(request.getGender() != null ? request.getGender() : null)
                 .role(Role.USER)
+                .photo("https://ui.shadcn.com/avatars/03.png")
                 .build();
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);

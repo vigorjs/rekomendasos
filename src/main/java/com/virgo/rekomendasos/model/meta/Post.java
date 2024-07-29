@@ -36,6 +36,9 @@ public class Post {
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
+    @Column(name = "cloudinaryImageId")
+    private String cloudinaryImageId;
+
     @ManyToOne
     @NotNull
     @JoinColumn(name = "user_id", nullable = false)
@@ -45,5 +48,6 @@ public class Post {
     @NotNull
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
+
 
 }
