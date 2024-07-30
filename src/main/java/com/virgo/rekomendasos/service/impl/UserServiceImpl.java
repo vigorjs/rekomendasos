@@ -187,6 +187,6 @@ public class UserServiceImpl implements UserService {
         Optional<LogTransaction> lastTransaction = logTransactionsRepository.findTopByOrderByIdDesc();
         Long lastId = lastTransaction.map(LogTransaction::getId).orElse(0L);
 
-        return "TOPUP-" + (lastId + 1);
+        return "TOPUPS-" + (lastId + 1);
     }
 }
