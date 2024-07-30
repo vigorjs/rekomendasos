@@ -101,7 +101,7 @@ public class GeoApiServiceImpl implements GeoApiService {
         }
     }
 
-    private List<Place> convertToListOfPlace(PlaceResponseDto placeResponseDto) {
+    public List<Place> convertToListOfPlace(PlaceResponseDto placeResponseDto) {
         List<Place> places = new ArrayList<>();
         List<PlaceResponseDto.Features> features = placeResponseDto.getFeatures();
         for (PlaceResponseDto.Features feature : features) {

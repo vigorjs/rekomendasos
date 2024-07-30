@@ -4,11 +4,8 @@ import com.virgo.rekomendasos.model.meta.Place;
 import com.virgo.rekomendasos.repo.PlaceRepository;
 import com.virgo.rekomendasos.service.GeoApiService;
 import com.virgo.rekomendasos.service.PlaceService;
-import com.virgo.rekomendasos.utils.dto.restClientDto.PlaceResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +73,7 @@ public class PlaceServiceImpl implements PlaceService {
         List<Place> places = findAll();
         List<Place> placeListFromApi;
 
-        if (limit == null || search == null) {
+        if (limit == null && search == null) {
             placeListFromApi = geoApiService.findAll();
         } else {
             placeListFromApi = geoApiService.findAll(limit, search);
@@ -112,15 +109,15 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<Place> findAllPopularPublicPlaces(Integer limit, String search) {
 
-        List<Place> sortedPlaces = new ArrayList<>(placeRepository
-                .findAll()
+        List<Place> sortedPlaces = new ArrayList<>(
+                findAll()
                 .stream()
                 .sorted((p1, p2) -> p2.getRating().compareTo(p1.getRating()))
                 .toList());
 
         List<Place> placeListFromApi;
 
-        if ( limit == null || search == null) {
+        if ( limit == null && search == null) {
             placeListFromApi = geoApiService.findAll();
         } else {
             placeListFromApi = geoApiService.findAll(limit, search);
