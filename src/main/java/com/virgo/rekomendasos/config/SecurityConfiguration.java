@@ -1,10 +1,7 @@
 package com.virgo.rekomendasos.config;
 
-import com.virgo.rekomendasos.config.advisers.AppWideExceptionHandler;
-import com.virgo.rekomendasos.config.advisers.exception.CustomAccessDeniedException;
-import com.virgo.rekomendasos.config.advisers.exception.CustomAuthenticationEntryPoint;
-import com.virgo.rekomendasos.config.advisers.exception.ValidateException;
-import com.virgo.rekomendasos.model.enums.Role;
+import com.virgo.rekomendasos.config.advisers.CustomAccessDeniedException;
+import com.virgo.rekomendasos.config.advisers.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,11 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 

@@ -1,4 +1,4 @@
-package com.virgo.rekomendasos.config.advisers.exception;
+package com.virgo.rekomendasos.config.advisers;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +15,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, org.springframework.security.core.AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        response.getWriter().write("{\"error\": \"Unauthorized: " + authException.getMessage() + "\"}");
+        response.getWriter().write("{\"Error\": \"Unauthorized: You Need Login To Access This Resource\"}");
     }
 }

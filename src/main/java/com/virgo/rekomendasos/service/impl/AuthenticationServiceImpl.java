@@ -2,6 +2,7 @@ package com.virgo.rekomendasos.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virgo.rekomendasos.config.JwtService;
+import com.virgo.rekomendasos.config.advisers.exception.AuthenticationException;
 import com.virgo.rekomendasos.config.advisers.exception.NotFoundException;
 import com.virgo.rekomendasos.utils.dto.AuthenticationRequestDTO;
 import com.virgo.rekomendasos.utils.dto.AuthenticationResponseDTO;
@@ -47,6 +48,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .mobileNumber(request.getMobileNumber())
                 .gender(request.getGender() != null ? request.getGender() : null)
                 .role(request.getRole() != null ? request.getRole() : Role.USER)
+                .photo("https://ui.shadcn.com/avatars/03.png")
                 .build();
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);

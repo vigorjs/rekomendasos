@@ -1,8 +1,6 @@
 package com.virgo.rekomendasos.config.advisers;
 
-import com.virgo.rekomendasos.config.advisers.exception.NotFoundException;
 import com.virgo.rekomendasos.config.advisers.exception.ValidateException;
-import io.jsonwebtoken.ExpiredJwtException;
 import com.virgo.rekomendasos.utils.responseWrapper.WebResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpServerErrorException;
+import org.webjars.NotFoundException;
 
 import javax.naming.AuthenticationException;
 import java.util.HashMap;
@@ -21,14 +20,13 @@ import java.util.Map;
 @ControllerAdvice
 @CrossOrigin
 public class AppWideExceptionHandler {
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e) {
-        return new ResponseEntity<>(new WebResponse<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> handleNotFoundException(NotFoundException e) {
-        return new ResponseEntity<>(new WebResponse<>("Not Found", HttpStatus.NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
+    /*
+    * Authentication Handler Exception
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
+        return new ResponseEntity<>("Error: Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(ValidateException.class)
@@ -41,31 +39,43 @@ public class AppWideExceptionHandler {
         return new ResponseEntity<>(new WebResponse<>("Invalid login Credetiantials", HttpStatus.UNAUTHORIZED, e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception e) {
+        return new ResponseEntity<>(new WebResponse<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<?> handleNotFoundException(NotFoundException e) {
+        return new ResponseEntity<>(new WebResponse<>("Not Found", HttpStatus.NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
     // Bad Input Handler
-    @ExceptionHandler({RuntimeException.class})
-    public ResponseEntity<?> handleRuntimeException(RuntimeException e){
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handlePropertyValueException(Exception e){
+        String errorMessage = "BAD REQUEST : " + e.getMessage();
+        if (e.getMessage().contains("com.virgo.rekomendasos.model.meta.User.email")){
+            errorMessage = "Email Field Cannot be Empty";
+        }
+        if (e.getMessage().contains("rawPassword cannot be null")) {
+            errorMessage = "Password Field Cannot be Empty";
+        }
+        if (e.getMessage().contains("com.virgo.rekomendasos.model.meta.User.firstname")) {
+            errorMessage = "FirstName Field Cannot be Empty";
+        }
+        if (e.getMessage().contains("com.virgo.rekomendasos.model.meta.User.lastname")) {
+            errorMessage = "LastName Field Cannot be Empty";
+        }
+        if (e.getMessage().contains("could not execute statement [ERROR: duplicate key value violates unique constraint \"users_email_key\"")){
+            errorMessage = "Email Has Been Registered On Our System, Please Login Instead";
+        }
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
-    // Authentication Error Handler
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
-        return new ResponseEntity<>("Error: Invalid username or password", HttpStatus.UNAUTHORIZED);
-    }
-
+    // Account Locked Exception
     @ExceptionHandler(AccountStatusException.class)
     public ResponseEntity<String> handleAccountStatusException(AccountStatusException ex) {
         return  new ResponseEntity<>("Error: The Account is Locked", HttpStatus.FORBIDDEN);
     }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex){
-        return new ResponseEntity<>(
-                "Error: Your Session has expired, Please Login Again",
-                HttpStatus.FORBIDDEN
-        );
-    }
-
 
     // Method Argument Error Handler
     @ExceptionHandler(MethodArgumentNotValidException.class)

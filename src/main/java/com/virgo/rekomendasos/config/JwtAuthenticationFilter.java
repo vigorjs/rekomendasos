@@ -1,6 +1,7 @@
 package com.virgo.rekomendasos.config;
 
 import com.virgo.rekomendasos.repo.TokenRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -71,7 +72,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Handle invalid JWT signature
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Invalid JWT Signature: " + e.getMessage() + "\"}");
+            response.getWriter().write("{\"Error\": \"Invalid JWT Signature: " + e.getMessage() + "\"}");
+            return;
+        } catch (ExpiredJwtException e) {
+            // Handle Expired JWT Signature
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"Error\": \"Your Session has expired, Please Login Again \"}");
             return;
         }
         filterChain.doFilter(request, response);
