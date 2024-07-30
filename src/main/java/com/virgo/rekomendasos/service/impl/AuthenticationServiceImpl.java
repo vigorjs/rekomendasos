@@ -47,7 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .address(request.getAddress())
                 .mobileNumber(request.getMobileNumber())
                 .gender(request.getGender() != null ? request.getGender() : null)
-                .role(Role.USER)
+                .role(request.getRole() != null ? request.getRole() : Role.USER)
                 .photo("https://ui.shadcn.com/avatars/03.png")
                 .build();
         var savedUser = repository.save(user);

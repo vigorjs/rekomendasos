@@ -3,7 +3,7 @@ spring:
 #    url: jdbc:postgresql://localhost:5432/java_todo_db?createDatabaseIfNotExist=true
     url: jdbc:postgresql://localhost:5432/rekomendasos_db
     username: postgres
-    password: postgres
+    password: 1234
 #    password: Batassuci123#
   jpa:
     hibernate:
