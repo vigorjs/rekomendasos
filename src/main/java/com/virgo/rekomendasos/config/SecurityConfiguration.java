@@ -2,6 +2,7 @@ package com.virgo.rekomendasos.config;
 
 import com.virgo.rekomendasos.config.advisers.CustomAccessDeniedException;
 import com.virgo.rekomendasos.config.advisers.CustomAuthenticationEntryPoint;
+import com.virgo.rekomendasos.model.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,12 +37,12 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                    .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                    .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-                    .requestMatchers("/api/user/**").permitAll()
-                    .requestMatchers("/api/**").permitAll()
-                    .anyRequest()
-                    .authenticated()
+                .requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/api/posts/**", "api/places/**", "api/vouchers/**").permitAll()
+                .requestMatchers("/api/admin/**").hasAuthority(Role.ADMIN.name())
+                .requestMatchers("/api/user/**").hasAuthority(Role.USER.name())
+                .requestMatchers("/api/**").permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .exceptionHandling()
                     .authenticationEntryPoint(customAuthenticationEntryPoint)

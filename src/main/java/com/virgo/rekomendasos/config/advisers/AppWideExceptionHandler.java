@@ -53,19 +53,19 @@ public class AppWideExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handlePropertyValueException(Exception e){
         String errorMessage = "BAD REQUEST : " + e.getMessage();
-        if (e.getMessage().contains("com.virgo.rekomendasos.model.meta.User.email")){
+        if (e.getMessage().contains("\"email\"")){
             errorMessage = "Email Field Cannot be Empty";
         }
-        if (e.getMessage().contains("rawPassword cannot be null")) {
+        if (e.getMessage().contains("rawPassword")) {
             errorMessage = "Password Field Cannot be Empty";
         }
-        if (e.getMessage().contains("com.virgo.rekomendasos.model.meta.User.firstname")) {
+        if (e.getMessage().contains("\"first_name\"")) {
             errorMessage = "FirstName Field Cannot be Empty";
         }
-        if (e.getMessage().contains("com.virgo.rekomendasos.model.meta.User.lastname")) {
+        if (e.getMessage().contains("\"last_name\"")) {
             errorMessage = "LastName Field Cannot be Empty";
         }
-        if (e.getMessage().contains("could not execute statement [ERROR: duplicate key value violates unique constraint \"users_email_key\"")){
+        if (e.getMessage().contains("\"users_email_key\"")){
             errorMessage = "Email Has Been Registered On Our System, Please Login Instead";
         }
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
