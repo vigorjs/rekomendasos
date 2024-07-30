@@ -6,10 +6,7 @@ import com.virgo.rekomendasos.model.meta.User;
 import com.virgo.rekomendasos.repo.PlaceRepository;
 import com.virgo.rekomendasos.repo.PostRepository;
 import com.virgo.rekomendasos.repo.UserRepository;
-import com.virgo.rekomendasos.service.AuthenticationService;
-import com.virgo.rekomendasos.service.CloudinaryService;
-import com.virgo.rekomendasos.service.PlaceService;
-import com.virgo.rekomendasos.service.PostService;
+import com.virgo.rekomendasos.service.*;
 import com.virgo.rekomendasos.utils.FileUploadUtil;
 import com.virgo.rekomendasos.utils.dto.PostDto;
 import com.virgo.rekomendasos.utils.dto.UserPostDto;
@@ -44,6 +41,9 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    @Autowired
+    private GeoApiService geoApiService;
+
     @Override
     @Transactional
     public Post create(PostDto obj) {
@@ -51,7 +51,7 @@ public class PostServiceImpl implements PostService {
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
         if (place == null) {
-            List<Place> places = placeService.getAllPlacesFromApi();
+            List<Place> places = geoApiService.findAll();
             for (Place pl : places) {
                 if (pl.getId().equals(obj.getPlaceId())) {
                     place = pl;
@@ -87,7 +87,7 @@ public class PostServiceImpl implements PostService {
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
         if (place == null) {
-            List<Place> places = placeService.getAllPlacesFromApi();
+            List<Place> places = geoApiService.findAll();
             for (Place pl : places) {
                 if (pl.getId().equals(obj.getPlaceId())) {
                     place = pl;
@@ -178,7 +178,7 @@ public class PostServiceImpl implements PostService {
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
         if (place == null) {
-            List<Place> places = placeService.getAllPlacesFromApi();
+            List<Place> places = geoApiService.findAll();
             for (Place pl : places) {
                 if (pl.getId().equals(obj.getPlaceId())) {
                     place = pl;
@@ -213,7 +213,7 @@ public class PostServiceImpl implements PostService {
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
         if (place == null) {
-            List<Place> places = placeService.getAllPlacesFromApi();
+            List<Place> places = geoApiService.findAll();
             for (Place pl : places) {
                 if (pl.getId().equals(obj.getPlaceId())) {
                     place = pl;

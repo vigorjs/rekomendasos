@@ -37,8 +37,8 @@ public class PlaceController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @GetMapping("/admin/places")
-    public ResponseEntity<?> findAll(@RequestParam(required = false) Integer limit) {
-        return Response.renderJSON(placeService.findAll(limit), "Success", HttpStatus.OK);
+    public ResponseEntity<?> findAll() {
+        return Response.renderJSON(placeService.findAll(), "Success", HttpStatus.OK);
     }
 
     @Operation(summary = "Get place by id", security = @SecurityRequirement(name = "bearerAuth"))
@@ -102,8 +102,8 @@ public class PlaceController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @GetMapping("/places")
-    public ResponseEntity<?> findAllPlaces(@RequestParam(required = false) Integer limit) {
-        return Response.renderJSON(placeService.findAll(limit), "Success", HttpStatus.OK);
+    public ResponseEntity<?> findAllPlaces(@RequestParam(required = false) Integer limit, @RequestParam(required = false) String search) {
+        return Response.renderJSON(placeService.findAllPublicPlace(limit, search), "Success", HttpStatus.OK);
     }
 
 
@@ -116,8 +116,8 @@ public class PlaceController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @GetMapping("/places/popular")
-    public ResponseEntity<?> findPopularPlaces(@RequestParam(required = false) Integer limit) {
-        return Response.renderJSON(placeService.findAllPopularPlaces(limit), "Success", HttpStatus.OK);
+    public ResponseEntity<?> findPopularPlaces(@RequestParam(required = false) Integer limit,@RequestParam(required = false) String search) {
+        return Response.renderJSON(placeService.findAllPopularPublicPlaces(limit, search), "Success", HttpStatus.OK);
     }
 
 

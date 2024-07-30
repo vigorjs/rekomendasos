@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, String> {
 
-    @Query(value = "SELECT * FROM places LIMIT :limit", nativeQuery = true)
-    List<Place> findAllWithLimit( Integer limit);
+//    @Query(value = "SELECT * FROM places LIMIT :limit", nativeQuery = true)
+//    List<Place> findAllWithLimit( Integer limit);
 }
