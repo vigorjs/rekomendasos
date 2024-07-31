@@ -177,7 +177,7 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @GetMapping("/posts")
-    public ResponseEntity<?> findAllPublicPost() {
+    public ResponseEntity<?> findAllPublicPosts() {
         return Response.renderJSON(postService.findAll(), "Success", HttpStatus.OK);
     }
 }
