@@ -45,7 +45,6 @@ public class VoucherController {
         Page<Voucher> voucherPage = voucherService.findAll(pageable);
         PaginationResponse<Voucher> res = new PaginationResponse<>(voucherPage);
         return Response.renderJSON(res);
-
     }
 
     @Operation(summary = "Get voucher by id", security = @SecurityRequirement(name = "bearerAuth"))

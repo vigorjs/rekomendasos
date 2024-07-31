@@ -139,9 +139,9 @@ public class LogTransactionServiceImpl implements LogTransactionService {
                 log.error("error in updateTransactionStatus() {}", e.getMessage());
             }
         }
-        log.info("Exiting updateTransactionStatus()");
         if (!flag){
-            midtransService.changeStatus(obj.getOrderId(), String.valueOf(TransactionStatus.failure));
+            midtransService.changeStatus(obj.getOrderId(), String.valueOf(TransactionStatus.cancel));
         }
+        log.info("Exiting updateTransactionStatus()");
     }
 }

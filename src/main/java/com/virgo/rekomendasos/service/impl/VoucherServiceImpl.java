@@ -12,6 +12,9 @@ import com.virgo.rekomendasos.utils.dto.VoucherConvert;
 import com.virgo.rekomendasos.utils.dto.VoucherDTO;
 import com.virgo.rekomendasos.utils.specification.VoucherTransactionSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +33,7 @@ public class VoucherServiceImpl implements VoucherService {
     private final AuthenticationService authenticationService;
 
     @Override
+    @CachePut(value = "vouchers", key = "#result.id")
     public Voucher create(VoucherDTO newVoucher) {
         Voucher voucher = voucherRepository.save(
                 Voucher.builder()
@@ -64,6 +68,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    @Cacheable(value = "vouchers", key = "#id")
     public Voucher findById(Integer id) {
         return voucherRepository.findById(id).orElseThrow(() -> new RuntimeException("Voucher Not Found"));
     }
@@ -86,6 +91,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    @CachePut(value = "vouchers", key = "#id")
     public Voucher updateById(Integer id, VoucherDTO updatedVoucher) {
         Voucher selectedVoucher = findById(id);
         if (!updatedVoucher.getName().isEmpty()) selectedVoucher.setName(updatedVoucher.getName());
@@ -102,6 +108,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    @CacheEvict(value = "vouchers", key = "#id")
     public void deleteById(Integer id) {
         voucherRepository.deleteById(id);
     }

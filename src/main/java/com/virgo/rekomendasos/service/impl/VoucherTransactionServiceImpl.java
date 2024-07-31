@@ -14,6 +14,9 @@ import com.virgo.rekomendasos.service.VoucherTransactionService;
 import com.virgo.rekomendasos.utils.dto.VoucherTransactionConvert;
 import com.virgo.rekomendasos.utils.dto.VoucherTransactionDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,7 @@ public class VoucherTransactionServiceImpl implements VoucherTransactionService 
     private final UserRepository userRepository;
 
     @Override
+    @CachePut(value = "voucherTransactions", key = "#result.id")
     public VoucherTransaction create(VoucherTransactionDTO newVoucherTransaction) {
         Voucher voucher = voucherService.findById(newVoucherTransaction.getVoucherId());
         VoucherStock stock = voucher.getVoucherStock();
@@ -66,11 +70,13 @@ public class VoucherTransactionServiceImpl implements VoucherTransactionService 
     }
 
     @Override
+    @Cacheable(value = "voucherTransactions", key = "#id")
     public VoucherTransaction findById(Integer id) {
         return voucherTransactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Voucher Transaction Not Found"));
     }
 
     @Override
+    @CachePut(value = "voucherTransactions", key = "#id")
     public VoucherTransaction updateById(Integer id, VoucherTransactionDTO updatedVoucherTransactionDTO) {
         VoucherTransaction selectedVoucherTransaction = findById(id);
         selectedVoucherTransaction.setUser(authenticationService.getUserAuthenticated());
@@ -85,11 +91,13 @@ public class VoucherTransactionServiceImpl implements VoucherTransactionService 
     }
 
     @Override
+    @CacheEvict(value = "voucherTransactions", key = "#id")
     public void deleteById(Integer id) {
         voucherTransactionRepository.deleteById(id);
     }
 
     @Override
+    @CachePut(value = "voucherTransactions", key = "#id")
     public VoucherTransaction use(Integer id, Integer quantity) {
         VoucherTransaction voucherTransaction = findById(id);
         voucherTransaction.setVoucherQuantity(voucherTransaction.getVoucherQuantity() - quantity);
