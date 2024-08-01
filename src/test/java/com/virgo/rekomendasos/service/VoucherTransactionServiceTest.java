@@ -1,35 +1,28 @@
 package com.virgo.rekomendasos.service;
 
-
+import com.virgo.rekomendasos.model.meta.User;
 import com.virgo.rekomendasos.model.meta.Voucher;
 import com.virgo.rekomendasos.model.meta.VoucherTransaction;
 import com.virgo.rekomendasos.repo.VoucherTransactionRepository;
-import com.virgo.rekomendasos.service.AuthenticationService;
-import com.virgo.rekomendasos.service.UserService;
-import com.virgo.rekomendasos.service.VoucherService;
 import com.virgo.rekomendasos.service.impl.VoucherTransactionServiceImpl;
 import com.virgo.rekomendasos.utils.dto.VoucherTransactionDTO;
-import com.virgo.rekomendasos.utils.dto.VoucherTransactionConvert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class VoucherTransactionServiceTest {
+
     @Mock
     private VoucherTransactionRepository voucherTransactionRepository;
 
@@ -45,148 +38,188 @@ public class VoucherTransactionServiceTest {
     @InjectMocks
     private VoucherTransactionServiceImpl voucherTransactionService;
 
-    private VoucherTransactionDTO voucherTransactionDTO;
-    private VoucherTransaction voucherTransaction;
-    private Voucher voucher;
-
     @BeforeEach
     void setUp() {
-        // Initialize common test data
-        voucherTransactionDTO = VoucherTransactionDTO.builder()
-                .voucherId(1)
-                .voucherQuantity(500)
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testCreate_Success() {
+        VoucherTransactionDTO newVoucherTransaction = new VoucherTransactionDTO(1, 1, 5);
+        User authenticatedUser = User.builder()
+                .id(1)
+                .firstname("Jhon")
+                .lastname("Doe")
+                .email("jhon@mail.com")
+                .password("encodedPassword")
                 .build();
+        Voucher voucher = new Voucher(1, "Test Voucher", 100, 10);
+        VoucherTransaction savedTransaction = new VoucherTransaction(1, authenticatedUser, voucher, 5);
 
-        voucherTransaction = new VoucherTransaction();
-        voucherTransaction.setVoucher(new Voucher());
-        voucherTransaction.setVoucherQuantity(5);
-        // Assume a default user or mock user if necessary
-        voucherTransaction.setUser(null);
+        when(authenticationService.getUserAuthenticated()).thenReturn(authenticatedUser);
+        when(voucherService.findById(1)).thenReturn(voucher);
+        when(voucherTransactionRepository.save(any(VoucherTransaction.class))).thenReturn(savedTransaction);
 
-        voucher = new Voucher();
-        voucher.setId(1);
-        voucher.setName("Test Voucher");
+        VoucherTransaction result = voucherTransactionService.create(newVoucherTransaction);
 
-        // Mock the behavior of the voucher service and other dependencies
-        when(voucherService.findById(anyInt())).thenReturn(voucher);
-        when(authenticationService.getUserAuthenticated()).thenReturn(null); // Mock user authentication as null
-        when(voucherTransactionRepository.save(any(VoucherTransaction.class))).thenReturn(voucherTransaction);
-        when(voucherTransactionRepository.findById(anyInt())).thenReturn(Optional.of(voucherTransaction));
-        when(userService.getById(anyInt())).thenReturn(null); // Mock userService getById as null
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals(authenticatedUser, result.getUser());
+        assertEquals(voucher, result.getVoucher());
+        assertEquals(5, result.getVoucherQuantity());
+
+        verify(authenticationService, times(1)).getUserAuthenticated();
+        verify(voucherService, times(1)).findById(1);
+        verify(voucherTransactionRepository, times(1)).save(any(VoucherTransaction.class));
     }
 
     @Test
-    void create_Success() {
-        // When
-        VoucherTransaction createdVoucherTransaction = voucherTransactionService.create(voucherTransactionDTO);
+    void testFindAll_Success() {
+        Pageable pageable = mock(Pageable.class);
+        Page<VoucherTransaction> expectedPage = new PageImpl<>(Arrays.asList(
+                new VoucherTransaction(1, new User(), new Voucher(), 5),
+                new VoucherTransaction(2, new User(), new Voucher(), 3)
+        ));
 
-        // Then
-        assertNotNull(createdVoucherTransaction);
-        assertEquals(1, createdVoucherTransaction.getVoucher().getId()); // Asumsikan ID harus 1
-        assertEquals(5, createdVoucherTransaction.getVoucherQuantity());
-    }
+        when(voucherTransactionRepository.findAll(pageable)).thenReturn(expectedPage);
 
-    @Test
-    void findAll_Success() {
-        // Given
-        Pageable pageable = Pageable.unpaged();
-        Page<VoucherTransaction> page = new PageImpl<>(Collections.singletonList(voucherTransaction));
-        when(voucherTransactionRepository.findAll(pageable)).thenReturn(page);
-
-        // When
         Page<VoucherTransaction> result = voucherTransactionService.findAll(pageable);
 
-        // Then
         assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        assertEquals(voucherTransaction, result.getContent().get(0));
+        assertEquals(2, result.getTotalElements());
+
+        verify(voucherTransactionRepository, times(1)).findAll(pageable);
     }
 
     @Test
-    void findById_Success() {
-        // When
-        VoucherTransaction foundVoucherTransaction = voucherTransactionService.findById(1);
+    void testFindById_Success() {
+        Integer transactionId = 1;
+        VoucherTransaction expectedTransaction = new VoucherTransaction(transactionId, new User(), new Voucher(), 5);
 
-        // Then
-        assertNotNull(foundVoucherTransaction);
-        assertEquals(voucherTransaction, foundVoucherTransaction);
+        when(voucherTransactionRepository.findById(transactionId)).thenReturn(Optional.of(expectedTransaction));
+
+        VoucherTransaction result = voucherTransactionService.findById(transactionId);
+
+        assertNotNull(result);
+        assertEquals(transactionId, result.getId());
+
+        verify(voucherTransactionRepository, times(1)).findById(transactionId);
     }
 
     @Test
-    void findById_NotFound() {
-        // Given
-        when(voucherTransactionRepository.findById(anyInt())).thenReturn(Optional.empty());
+    void testFindById_NotFound() {
+        Integer transactionId = 1;
 
-        // When & Then
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            voucherTransactionService.findById(1);
-        });
-        assertEquals("Voucher Not Found", thrown.getMessage());
+        when(voucherTransactionRepository.findById(transactionId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> voucherTransactionService.findById(transactionId));
+
+        verify(voucherTransactionRepository, times(1)).findById(transactionId);
     }
 
     @Test
-    void updateById_Success() {
-        // Given
-        VoucherTransactionDTO updatedDTO = new VoucherTransactionDTO();
-        updatedDTO.setVoucherId(1);
-        updatedDTO.setVoucherQuantity(10);
+    void testUpdateById_Success() {
+        Integer transactionId = 1;
+        VoucherTransactionDTO updatedDTO = new VoucherTransactionDTO(2, 2, 10);
+        User user = User.builder()
+                .id(2)
+                .firstname("Jon")
+                .lastname("Den")
+                .email("jon@mail.com")
+                .password("encodedPassword")
+                .build();
+        Voucher voucher = new Voucher(2, "New Voucher", 200, 20);
+        VoucherTransaction existingTransaction = new VoucherTransaction(transactionId, new User(), new Voucher(), 5);
+        VoucherTransaction updatedTransaction = new VoucherTransaction(transactionId, user, voucher, 10);
 
-        // When
-        VoucherTransaction updatedVoucherTransaction = voucherTransactionService.updateById(1, updatedDTO);
+        when(voucherTransactionRepository.findById(transactionId)).thenReturn(Optional.of(existingTransaction));
+        when(userService.getById(2)).thenReturn(user);
+        when(voucherService.findById(2)).thenReturn(voucher);
+        when(voucherTransactionRepository.save(any(VoucherTransaction.class))).thenReturn(updatedTransaction);
 
-        // Then
-        assertNotNull(updatedVoucherTransaction);
-        assertEquals(10, updatedVoucherTransaction.getVoucherQuantity());
+        VoucherTransaction result = voucherTransactionService.updateById(transactionId, updatedDTO);
+
+        assertNotNull(result);
+        assertEquals(transactionId, result.getId());
+        assertEquals(user, result.getUser());
+        assertEquals(voucher, result.getVoucher());
+        assertEquals(10, result.getVoucherQuantity());
+
+        verify(voucherTransactionRepository, times(1)).findById(transactionId);
+        verify(userService, times(1)).getById(2);
+        verify(voucherService, times(1)).findById(2);
+        verify(voucherTransactionRepository, times(1)).save(any(VoucherTransaction.class));
     }
 
     @Test
-    void updateById_NotFound() {
-        // Given
-        VoucherTransactionDTO updatedDTO = new VoucherTransactionDTO();
-        updatedDTO.setVoucherId(1);
-        updatedDTO.setVoucherQuantity(10);
-        when(voucherTransactionRepository.findById(anyInt())).thenReturn(Optional.empty());
+    void testUpdateById_NotFound() {
+        Integer transactionId = 1;
+        VoucherTransactionDTO updatedDTO = new VoucherTransactionDTO(2, 2, 10);
 
-        // When & Then
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            voucherTransactionService.updateById(1, updatedDTO);
-        });
-        assertEquals("Voucher Not Found", thrown.getMessage());
+        when(voucherTransactionRepository.findById(transactionId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> voucherTransactionService.updateById(transactionId, updatedDTO));
+
+        verify(voucherTransactionRepository, times(1)).findById(transactionId);
+        verify(voucherTransactionRepository, never()).save(any(VoucherTransaction.class));
     }
 
     @Test
-    void deleteById_Success() {
-        // When
-        voucherTransactionService.deleteById(1);
+    void testDeleteById_Success() {
+        Integer transactionId = 1;
 
-        // Then
-        verify(voucherTransactionRepository, times(1)).deleteById(1);
+        voucherTransactionService.deleteById(transactionId);
+
+        verify(voucherTransactionRepository, times(1)).deleteById(transactionId);
     }
 
     @Test
-    void use_Success() {
-        // Given
-        int quantityToUse = 3;
-        voucherTransaction.setVoucherQuantity(5);
+    void testUse_Success() {
+        Integer transactionId = 1;
+        Integer quantity = 2;
+        User user = User.builder()
+                .id(1)
+                .firstname("Jhon")
+                .lastname("Doe")
+                .email("jhon@mail.com")
+                .password("encodedPassword")
+                .build();
+        Voucher voucher = new Voucher(1, "Test Voucher", 100, 10);
+        VoucherTransaction existingTransaction = new VoucherTransaction(transactionId, user, voucher, 5);
+        VoucherTransaction updatedTransaction = new VoucherTransaction(transactionId, user, voucher, 3);
 
-        // When
-        VoucherTransaction updatedVoucherTransaction = voucherTransactionService.use(1, quantityToUse);
+        when(voucherTransactionRepository.findById(transactionId)).thenReturn(Optional.of(existingTransaction));
+        when(voucherTransactionRepository.save(any(VoucherTransaction.class))).thenReturn(updatedTransaction);
 
-        // Then
-        assertNotNull(updatedVoucherTransaction);
-        assertEquals(2, updatedVoucherTransaction.getVoucherQuantity()); // 5 - 3 = 2
+        VoucherTransaction result = voucherTransactionService.use(transactionId, quantity);
+
+        assertNotNull(result);
+        assertEquals(transactionId, result.getId());
+        assertEquals(3, result.getVoucherQuantity());
+
+        verify(voucherTransactionRepository, times(1)).findById(transactionId);
+        verify(voucherTransactionRepository, times(1)).save(any(VoucherTransaction.class));
     }
 
     @Test
-    void use_NotFound() {
-        // Given
-        int quantityToUse = 3;
-        when(voucherTransactionRepository.findById(anyInt())).thenReturn(Optional.empty());
+    void testUse_NotEnoughQuantity() {
+        Integer transactionId = 1;
+        Integer quantity = 10;
+        User user = User.builder()
+                .id(1)
+                .firstname("Jhon")
+                .lastname("Doe")
+                .email("jhon@mail.com")
+                .password("encodedPassword")
+                .build();
+        Voucher voucher = new Voucher(1, "Test Voucher", 100, 10);
+        VoucherTransaction existingTransaction = new VoucherTransaction(transactionId, user, voucher, 5);
 
-        // When & Then
-        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            voucherTransactionService.use(1, quantityToUse);
-        });
-        assertEquals("Voucher Not Found", thrown.getMessage());
+        when(voucherTransactionRepository.findById(transactionId)).thenReturn(Optional.of(existingTransaction));
+
+        assertThrows(IllegalArgumentException.class, () -> voucherTransactionService.use(transactionId, quantity));
+
+        verify(voucherTransactionRepository, times(1)).findById(transactionId);
+        verify(voucherTransactionRepository, never()).save(any(VoucherTransaction.class));
     }
 }

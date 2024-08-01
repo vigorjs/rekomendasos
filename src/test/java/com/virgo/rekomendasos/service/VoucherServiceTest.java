@@ -1,47 +1,42 @@
 package com.virgo.rekomendasos.service;
 
-import com.virgo.rekomendasos.model.meta.Voucher;
 import com.virgo.rekomendasos.model.meta.User;
+import com.virgo.rekomendasos.model.meta.Voucher;
 import com.virgo.rekomendasos.model.meta.VoucherTransaction;
 import com.virgo.rekomendasos.repo.VoucherRepository;
 import com.virgo.rekomendasos.repo.VoucherTransactionRepository;
-import com.virgo.rekomendasos.service.AuthenticationService;
 import com.virgo.rekomendasos.service.impl.VoucherServiceImpl;
 import com.virgo.rekomendasos.utils.dto.VoucherDTO;
-import com.virgo.rekomendasos.utils.specification.VoucherTransactionSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class VoucherServiceTest {
+
     @Mock
     private VoucherRepository voucherRepository;
+
     @Mock
     private VoucherTransactionRepository voucherTransactionRepository;
+
     @Mock
     private AuthenticationService authenticationService;
 
     @InjectMocks
     private VoucherServiceImpl voucherService;
-
-    private VoucherDTO validVoucherDto;
-    private Voucher validVoucher;
 
     @BeforeEach
     void setUp() {
@@ -49,151 +44,188 @@ public class VoucherServiceTest {
     }
 
     @Test
-    void create_Success() {
-        // Data setup
-        VoucherDTO newVoucherDto = new VoucherDTO();
-        newVoucherDto.setName("New Voucher");
-        newVoucherDto.setPrice(100);
-        newVoucherDto.setQuantity(10);
+    void testCreate_Success() {
+        VoucherDTO newVoucher = new VoucherDTO("Test Voucher", 100, 10);
+        Voucher savedVoucher = new Voucher(1, "Test Voucher", 100, 10);
 
-        Voucher savedVoucher = new Voucher();
-        savedVoucher.setId(1);
-        savedVoucher.setName(newVoucherDto.getName());
-        savedVoucher.setPrice(newVoucherDto.getPrice());
-        savedVoucher.setQuantity(newVoucherDto.getQuantity());
-
-        // Stubbing
         when(voucherRepository.save(any(Voucher.class))).thenReturn(savedVoucher);
 
-        // Call the method under test
-        Voucher result = voucherService.create(newVoucherDto);
+        Voucher result = voucherService.create(newVoucher);
 
-        // Assertions
-        assertNotNull(result, "The saved voucher should not be null");
-        assertEquals(savedVoucher.getName(), result.getName());
-        assertEquals(savedVoucher.getPrice(), result.getPrice());
-        assertEquals(savedVoucher.getQuantity(), result.getQuantity());
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("Test Voucher", result.getName());
+        assertEquals(100, result.getPrice());
+        assertEquals(10, result.getQuantity());
+
         verify(voucherRepository, times(1)).save(any(Voucher.class));
     }
 
-
     @Test
-    void create_InvalidPriceOrQuantity() {
-        VoucherDTO invalidVoucherDto = new VoucherDTO();
-        invalidVoucherDto.setName("Invalid Voucher");
-        invalidVoucherDto.setPrice(-100); // Harga tidak valid
-        invalidVoucherDto.setQuantity(-10); // Kuantitas tidak valid
+    void testCreate_WithNegativeValues() {
+        VoucherDTO newVoucher = new VoucherDTO("Test Voucher", -100, -10);
+        Voucher savedVoucher = new Voucher(1, "Test Voucher", 0, 0);
 
-        when(voucherRepository.save(any(Voucher.class))).thenReturn(new Voucher());
+        when(voucherRepository.save(any(Voucher.class))).thenReturn(savedVoucher);
 
-        Voucher createdVoucher = voucherService.create(invalidVoucherDto);
+        Voucher result = voucherService.create(newVoucher);
 
-        assertNotNull(createdVoucher);
-        assertEquals(0, createdVoucher.getPrice()); // Harga harus disetel ke 0
-        assertEquals(0, createdVoucher.getQuantity()); // Kuantitas harus disetel ke 0
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("Test Voucher", result.getName());
+        assertEquals(0, result.getPrice());
+        assertEquals(0, result.getQuantity());
+
         verify(voucherRepository, times(1)).save(any(Voucher.class));
     }
 
-
     @Test
-    void findAll_Success() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Voucher> vouchers = List.of(validVoucher);
-        Page<Voucher> voucherPage = new PageImpl<>(vouchers, pageable, vouchers.size());
+    void testFindAll_Success() {
+        Pageable pageable = mock(Pageable.class);
+        Page<Voucher> expectedPage = new PageImpl<>(Arrays.asList(
+                new Voucher(1, "Voucher 1", 100, 10),
+                new Voucher(2, "Voucher 2", 200, 20)
+        ));
 
-        when(voucherRepository.findAll(pageable)).thenReturn(voucherPage);
+        when(voucherRepository.findAll(pageable)).thenReturn(expectedPage);
 
         Page<Voucher> result = voucherService.findAll(pageable);
 
         assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        assertEquals(validVoucher.getName(), result.getContent().get(0).getName());
+        assertEquals(2, result.getTotalElements());
+        assertEquals("Voucher 1", result.getContent().get(0).getName());
+        assertEquals("Voucher 2", result.getContent().get(1).getName());
+
         verify(voucherRepository, times(1)).findAll(pageable);
     }
 
-
     @Test
-    void findById_Success() {
-        when(voucherRepository.findById(validVoucher.getId())).thenReturn(Optional.of(validVoucher));
+    void testFindAllVoucherByUserId_Success() {
+        Pageable pageable = mock(Pageable.class);
+        User authenticatedUser = new User();
+        VoucherTransaction vt1 = new VoucherTransaction(1, authenticatedUser, new Voucher(1, "Voucher 1", 100, 10), 1);
+        VoucherTransaction vt2 = new VoucherTransaction(2, authenticatedUser, new Voucher(2, "Voucher 2", 200, 20), 2);
+        Page<VoucherTransaction> voucherTransactions = new PageImpl<>(Arrays.asList(vt1, vt2));
 
-        Voucher result = voucherService.findById(validVoucher.getId());
+        when(authenticationService.getUserAuthenticated()).thenReturn(authenticatedUser);
+        when(voucherTransactionRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(voucherTransactions);
+
+        Page<Voucher> result = voucherService.findAllVoucherByUserId(pageable);
 
         assertNotNull(result);
-        assertEquals(validVoucher.getName(), result.getName());
-        verify(voucherRepository, times(1)).findById(validVoucher.getId());
+        assertEquals(2, result.getTotalElements());
+        assertEquals("Voucher 1", result.getContent().get(0).getName());
+        assertEquals("Voucher 2", result.getContent().get(1).getName());
+
+        verify(authenticationService, times(1)).getUserAuthenticated();
+        verify(voucherTransactionRepository, times(1)).findAll(any(Specification.class), eq(pageable));
     }
 
     @Test
-    void findById_NotFound() {
-        when(voucherRepository.findById(anyInt())).thenReturn(Optional.empty());
+    void testFindById_Success() {
+        Integer voucherId = 1;
+        Voucher expectedVoucher = new Voucher(voucherId, "Test Voucher", 100, 10);
 
-        assertThrows(RuntimeException.class, () -> voucherService.findById(1));
-        // Tidak perlu verify karena expect exception
+        when(voucherRepository.findById(voucherId)).thenReturn(Optional.of(expectedVoucher));
+
+        Voucher result = voucherService.findById(voucherId);
+
+        assertNotNull(result);
+        assertEquals(voucherId, result.getId());
+        assertEquals("Test Voucher", result.getName());
+
+        verify(voucherRepository, times(1)).findById(voucherId);
     }
 
+    @Test
+    void testFindById_NotFound() {
+        Integer voucherId = 1;
+
+        when(voucherRepository.findById(voucherId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> voucherService.findById(voucherId));
+
+        verify(voucherRepository, times(1)).findById(voucherId);
+    }
 
     @Test
-    void updateById_Success() {
-        // Data setup
-        Voucher existingVoucher = new Voucher();
-        existingVoucher.setId(1);
-        existingVoucher.setName("Existing Voucher");
-        existingVoucher.setPrice(100);
-        existingVoucher.setQuantity(10);
+    void testFindByUserIdAndId_Success() {
+        Integer voucherId = 1;
+        User authenticatedUser = new User();
+        Voucher expectedVoucher = new Voucher(voucherId, "Test Voucher", 100, 10);
+        VoucherTransaction vt = new VoucherTransaction(1, authenticatedUser, expectedVoucher, 1);
 
-        VoucherDTO updatedVoucherDto = new VoucherDTO();
-        updatedVoucherDto.setName("Updated Voucher");
-        updatedVoucherDto.setPrice(200);
-        updatedVoucherDto.setQuantity(20);
+        when(authenticationService.getUserAuthenticated()).thenReturn(authenticatedUser);
+        when(voucherTransactionRepository.findAll(any(Specification.class))).thenReturn(List.of(vt));
+        when(voucherRepository.findById(voucherId)).thenReturn(Optional.of(expectedVoucher));
 
-        Voucher updatedVoucher = new Voucher();
-        updatedVoucher.setId(1);
-        updatedVoucher.setName(updatedVoucherDto.getName());
-        updatedVoucher.setPrice(updatedVoucherDto.getPrice());
-        updatedVoucher.setQuantity(updatedVoucherDto.getQuantity());
+        Voucher result = voucherService.findByUserIdAndId(voucherId);
 
-        // Stubbing
-        when(voucherRepository.findById(existingVoucher.getId())).thenReturn(Optional.of(existingVoucher));
-        when(voucherRepository.save(any(Voucher.class))).thenReturn(updatedVoucher);
-
-        // Call the method under test
-        Voucher result = voucherService.updateById(existingVoucher.getId(), updatedVoucherDto);
-
-        // Assertions
         assertNotNull(result);
-        assertEquals(updatedVoucherDto.getName(), result.getName());
-        assertEquals(updatedVoucherDto.getPrice(), result.getPrice());
-        assertEquals(updatedVoucherDto.getQuantity(), result.getQuantity());
-        verify(voucherRepository, times(1)).findById(existingVoucher.getId());
+        assertEquals(voucherId, result.getId());
+        assertEquals("Test Voucher", result.getName());
+
+        verify(authenticationService, times(1)).getUserAuthenticated();
+        verify(voucherTransactionRepository, times(1)).findAll(any(Specification.class));
+        verify(voucherRepository, times(1)).findById(voucherId);
+    }
+
+    @Test
+    void testFindByUserIdAndId_NotFound() {
+        Integer voucherId = 1;
+        User authenticatedUser = new User();
+
+        when(authenticationService.getUserAuthenticated()).thenReturn(authenticatedUser);
+        when(voucherTransactionRepository.findAll(any(Specification.class))).thenReturn(List.of());
+
+        assertThrows(RuntimeException.class, () -> voucherService.findByUserIdAndId(voucherId));
+
+        verify(authenticationService, times(1)).getUserAuthenticated();
+        verify(voucherTransactionRepository, times(1)).findAll(any(Specification.class));
+        verify(voucherRepository, never()).findById(any());
+    }
+
+    @Test
+    void testUpdateById_Success() {
+        Integer voucherId = 1;
+        VoucherDTO updatedVoucher = new VoucherDTO("Updated Voucher", 200, 20);
+        Voucher existingVoucher = new Voucher(voucherId, "Test Voucher", 100, 10);
+        Voucher savedVoucher = new Voucher(voucherId, "Updated Voucher", 200, 20);
+
+        when(voucherRepository.findById(voucherId)).thenReturn(Optional.of(existingVoucher));
+        when(voucherRepository.save(any(Voucher.class))).thenReturn(savedVoucher);
+
+        Voucher result = voucherService.updateById(voucherId, updatedVoucher);
+
+        assertNotNull(result);
+        assertEquals(voucherId, result.getId());
+        assertEquals("Updated Voucher", result.getName());
+        assertEquals(200, result.getPrice());
+        assertEquals(20, result.getQuantity());
+
+        verify(voucherRepository, times(1)).findById(voucherId);
         verify(voucherRepository, times(1)).save(any(Voucher.class));
     }
 
-
-
     @Test
-    void updateById_NotFound() {
-        VoucherDTO updateDto = new VoucherDTO("UpdatedName", 2000, 20);
-        when(voucherRepository.findById(validVoucher.getId())).thenReturn(Optional.empty());
+    void testUpdateById_NotFound() {
+        Integer voucherId = 1;
+        VoucherDTO updatedVoucher = new VoucherDTO("Updated Voucher", 200, 20);
 
-        assertThrows(RuntimeException.class, () -> voucherService.updateById(validVoucher.getId(), updateDto));
+        when(voucherRepository.findById(voucherId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> voucherService.updateById(voucherId, updatedVoucher));
+
+        verify(voucherRepository, times(1)).findById(voucherId);
+        verify(voucherRepository, never()).save(any(Voucher.class));
     }
 
     @Test
-    void deleteById_Success() {
-        when(voucherRepository.findById(validVoucher.getId())).thenReturn(Optional.of(validVoucher));
-        doNothing().when(voucherRepository).deleteById(validVoucher.getId());
+    void testDeleteById_Success() {
+        Integer voucherId = 1;
 
-        voucherService.deleteById(validVoucher.getId());
+        voucherService.deleteById(voucherId);
 
-        verify(voucherRepository, times(1)).deleteById(validVoucher.getId());
-    }
-
-    @Test
-    void deleteById_NotFound() {
-        when(voucherRepository.findById(validVoucher.getId())).thenReturn(Optional.empty());
-
-        voucherService.deleteById(validVoucher.getId());
-
-        verify(voucherRepository, times(0)).deleteById(validVoucher.getId());
+        verify(voucherRepository, times(1)).deleteById(voucherId);
     }
 }
