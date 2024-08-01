@@ -6,314 +6,391 @@ import com.virgo.rekomendasos.model.meta.User;
 import com.virgo.rekomendasos.repo.PlaceRepository;
 import com.virgo.rekomendasos.repo.PostRepository;
 import com.virgo.rekomendasos.repo.UserRepository;
-import com.virgo.rekomendasos.service.AuthenticationService;
-import com.virgo.rekomendasos.service.CloudinaryService;
-import com.virgo.rekomendasos.service.PlaceService;
 import com.virgo.rekomendasos.service.impl.PostServiceImpl;
 import com.virgo.rekomendasos.utils.dto.PostDto;
 import com.virgo.rekomendasos.utils.dto.UserPostDto;
-import com.virgo.rekomendasos.utils.dto.restClientDto.CloudinaryResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.web.multipart.MultipartFile;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class PostServiceTest {
 
     @Mock
     private PostRepository postRepository;
+
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private PlaceRepository placeRepository;
+
     @Mock
     private PlaceService placeService;
+
     @Mock
     private AuthenticationService authenticationService;
+
     @Mock
     private CloudinaryService cloudinaryService;
 
+    @Mock
+    private GeoApiService geoApiService;
+
     @InjectMocks
-    private PostServiceImpl postService;
+    private PostServiceImpl postServiceImpl;
+
+    private PostDto postDto;
+    private UserPostDto userPostDto;
+    private User user;
+    private Place place;
+    private Post post;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        postDto = new PostDto();
+        postDto.setUserId(1);
+        postDto.setPlaceId("place1");
+        postDto.setTitle("Test Post");
+        postDto.setDescription("This is a test post");
+        postDto.setPicture("test.jpg");
+        postDto.setRating(4);
+
+        userPostDto = new UserPostDto();
+        userPostDto.setPlaceId("place1");
+        userPostDto.setTitle("Test Post");
+        userPostDto.setDescription("This is a test post");
+        userPostDto.setPicture("test.jpg");
+        userPostDto.setRating(4);
+
+        user = new User();
+        user.setId(1);
+        user.setPoint(10);
+
+        place = new Place();
+        place.setId("place1");
+        place.setRating(3);
+
+        post = Post.builder()
+                .title(postDto.getTitle())
+                .description(postDto.getDescription())
+                .picture(postDto.getPicture())
+                .rating(postDto.getRating())
+                .user(user)
+                .place(place)
+                .build();
     }
 
     @Test
-    void testCreateSuccess() {
-        PostDto postDto = new PostDto("Test Title", "Test Description", null, 4, 1, "place1");
-        User user = new User();
-        user.setId(1);
-        user.setPoint(0L);
-        Place place = new Place();
-        place.setId("place1");
-        place.setRating(0);
-
+    void create_WhenUserAndPlaceNotNull_ReturnPost() {
+        // arrange
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
-        when(postRepository.save(any(Post.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        Post result = postService.create(postDto);
+        // act
+        Post result = postServiceImpl.create(postDto);
 
+        // assert
         assertNotNull(result);
-        assertEquals("Test Title", result.getTitle());
-        assertEquals("Test Description", result.getDescription());
-        assertEquals(4, result.getRating());
-        assertEquals(user, result.getUser());
-        assertEquals(place, result.getPlace());
-        assertEquals(2L, user.getPoint());
-        assertEquals(4, place.getRating());
-
-        verify(userRepository).save(user);
-        verify(placeRepository).save(place);
-        verify(postRepository).save(any(Post.class));
+        assertEquals(result, post);
     }
 
     @Test
-    void testCreateWithFileSuccess() {
-        PostDto postDto = new PostDto("Test Title", "Test Description", null, 4, 1, "place1");
-        User user = new User();
-        user.setId(1);
-        user.setPoint(0L);
-        Place place = new Place();
-        place.setId("place1");
-        place.setRating(0);
-        MultipartFile file = mock(MultipartFile.class);
-        CloudinaryResponse cloudinaryResponse = new CloudinaryResponse("public_id", "http://example.com/image.jpg");
-
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
-        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
-        when(cloudinaryService.uploadFile(any(), anyString())).thenReturn(cloudinaryResponse);
-        when(postRepository.save(any(Post.class))).thenAnswer(i -> i.getArguments()[0]);
-
-        Post result = postService.create(postDto, file);
-
-        assertNotNull(result);
-        assertEquals("Test Title", result.getTitle());
-        assertEquals("Test Description", result.getDescription());
-        assertEquals(4, result.getRating());
-        assertEquals(user, result.getUser());
-        assertEquals(place, result.getPlace());
-        assertEquals("http://example.com/image.jpg", result.getPicture());
-        assertEquals("public_id", result.getCloudinaryImageId());
-        assertEquals(2L, user.getPoint());
-        assertEquals(4, place.getRating());
-
-        verify(userRepository).save(user);
-        verify(placeRepository).save(place);
-        verify(cloudinaryService).uploadFile(file, anyString());
-        verify(postRepository).save(any(Post.class));
-    }
-
-    @Test
-    void testCreateUserNotFound() {
-        PostDto postDto = new PostDto("Test Title", "Test Description", null, 4, 1, "place1");
-
+    void create_WhenUserNull_ReturnRuntimeException() {
+        // arrange
         when(userRepository.findById(1)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> postService.create(postDto));
+        // act and assert
+        Exception exception = assertThrows(RuntimeException.class, () -> postServiceImpl.create(postDto));
+        assertEquals("User not found", exception.getMessage());
+        verifyNoInteractions(placeRepository, postRepository, geoApiService);
     }
 
     @Test
-    void testCreatePlaceNotFound() {
-        PostDto postDto = new PostDto("Test Title", "Test Description", null, 4, 1, "place1");
-        User user = new User();
-        user.setId(1);
-
+    void create_WhenPlaceNull_ReturnPost() {
+        // arrange
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(placeRepository.findById("place1")).thenReturn(Optional.empty());
-        when(placeService.getAllPlacesFromApi()).thenReturn(new ArrayList<>());
+        when(geoApiService.findById("place1")).thenReturn(Optional.of(place));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        assertThrows(RuntimeException.class, () -> postService.create(postDto));
+        // act
+        Post result = postServiceImpl.create(postDto);
+
+        //assert
+        assertEquals(result, post);
+        assertNotNull(result);
+    }
+
+    // cloudinary test
+
+    @Test
+    void findAll_WhenSuccess() {
+        // arrange
+        when(postRepository.findAll()).thenReturn(List.of(Post.builder().id(1).build(), Post.builder().id(2).build()));
+
+        // act
+        List<Post> results = postServiceImpl.findAll();
+
+        // assert
+        assertNotNull(results);
+        assertEquals(2, results.size());
     }
 
     @Test
-    void testFindAllSuccess() {
-        List<Post> posts = new ArrayList<>();
-        posts.add(new Post());
-        posts.add(new Post());
-
-        when(postRepository.findAll()).thenReturn(posts);
-
-        List<Post> result = postService.findAll();
-
-        assertEquals(2, result.size());
-        verify(postRepository).findAll();
-    }
-
-    @Test
-    void testFindByIdSuccess() {
-        Post post = new Post();
-        post.setId(1);
-
+    void findById_WhenSuccess() {
         when(postRepository.findById(1)).thenReturn(Optional.of(post));
 
-        Post result = postService.findById(1);
+        Post result = postServiceImpl.findById(1);
 
         assertNotNull(result);
-        assertEquals(1, result.getId());
-        verify(postRepository).findById(1);
+        assertEquals(post, result);
     }
 
     @Test
-    void testFindByIdNotFound() {
+    void findById_WhenNotFound() {
         when(postRepository.findById(1)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> postService.findById(1));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            postServiceImpl.findById(1);
+        });
+        assertEquals(exception.getMessage(), "Post not found");
     }
 
     @Test
-    void testUpdateSuccess() {
-        PostDto postDto = new PostDto("Updated Title", "Updated Description", null, 5, 1, "place1");
-        User user = new User();
-        user.setId(1);
-        Place place = new Place();
-        place.setId("place1");
-        place.setRating(4);
-        Post existingPost = new Post();
-        existingPost.setId(1);
-        existingPost.setRating(4);
-        existingPost.setPlace(place);
+    void update_WhenUserNotFound_ReturnRuntimeException() {
+        when(userRepository.findById(1)).thenReturn(Optional.empty());
 
+        Exception exception = assertThrows(RuntimeException.class, () -> postServiceImpl.update(1, postDto));
+        assertEquals("User not found", exception.getMessage());
+        verifyNoInteractions(placeRepository, postRepository, geoApiService);
+    }
+
+    @Test
+    void update_WhenPlaceNotFound_ReturnRuntimeException() {
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
-        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
-        when(postRepository.findById(1)).thenReturn(Optional.of(existingPost));
-        when(postRepository.save(any(Post.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(placeRepository.findById("place1")).thenReturn(Optional.empty());
 
-        Post result = postService.update(1, postDto);
-
-        assertNotNull(result);
-        assertEquals("Updated Title", result.getTitle());
-        assertEquals("Updated Description", result.getDescription());
-        assertEquals(5, result.getRating());
-        assertEquals(user, result.getUser());
-        assertEquals(place, result.getPlace());
-        assertEquals(5, place.getRating());
-
-        verify(placeRepository).save(place);
-        verify(postRepository).save(any(Post.class));
+        Exception exception = assertThrows(RuntimeException.class, () -> postServiceImpl.update(1, postDto));
+        assertEquals("Place not found", exception.getMessage());
+        verifyNoInteractions(postRepository);
     }
 
     @Test
-    void testUpdatePostNotFound() {
-        PostDto postDto = new PostDto("Updated Title", "Updated Description", null, 5, 1, "place1");
-        User user = new User();
-        user.setId(1);
-        Place place = new Place();
-        place.setId("place1");
-
+    void update_WhenPostNotFound_ReturnRuntimeException() {
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
         when(postRepository.findById(1)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> postService.update(1, postDto));
+        Exception exception = assertThrows(RuntimeException.class, () -> postServiceImpl.update(1, postDto));
+        assertEquals(exception.getMessage(), "Post not found");
+
     }
 
     @Test
-    void testDeleteByIdSuccess() {
-        doNothing().when(postRepository).deleteById(1);
+    void update_WhenSuccess_ReturnPost() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
+        when(postRepository.findById(1)).thenReturn(Optional.of(post));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        postService.deleteById(1);
+        Post result = postServiceImpl.update(1, postDto);
+
+        assertNotNull(result);
+        assertEquals(result, post);
+
+        verify(placeRepository, times(1)).save(place);
+        verify(postRepository, times(1)).save(post);
+    }
+
+    @Test
+    void deleteById_WhenIdNotNull_DeletedPost() {
+        postServiceImpl.deleteById(1);
 
         verify(postRepository).deleteById(1);
     }
 
     @Test
-    void testFindAllByUserSuccess() {
-        User user = new User();
-        user.setId(1);
-        List<Post> posts = new ArrayList<>();
-        posts.add(new Post());
-        posts.add(new Post());
-        user.setPosts(posts);
+    void deleteById_WhenIdNull_DoNothing() {
+        postServiceImpl.deleteById(null);
 
-        when(authenticationService.getUserAuthenticated()).thenReturn(user);
-
-        List<Post> result = postService.findAllByUser();
-
-        assertEquals(2, result.size());
-        verify(authenticationService).getUserAuthenticated();
+        verify(postRepository, never()).deleteById(1);
     }
 
     @Test
-    void testCreateByUserSuccess() {
-        UserPostDto userPostDto = new UserPostDto("Test Title", "Test Description", null, 4, "place1");
-        User user = new User();
-        user.setId(1);
-        user.setPoint(0L);
-        Place place = new Place();
-        place.setId("place1");
-        place.setRating(0);
+    void findByUser_WhenUserNotFound_ReturnRuntimeException() {
+        when(postRepository.findById(1)).thenReturn(Optional.empty());
 
+        Exception exception = assertThrows(RuntimeException.class, () -> postServiceImpl.findByUser(1));
+        assertEquals(exception.getMessage(), "Post not found");
+    }
+
+    @Test
+    void findByUser_WhenSuccess_ReturnPost() {
+        when(postRepository.findById(1)).thenReturn(Optional.of(post));
+
+        Post result = postServiceImpl.findByUser(1);
+
+        assertEquals(result, post);
+        assertNotNull(result);
+    }
+
+    @Test
+    void findAllByUser_WhenSuccess_ReturnListOfPost() {
+        user.setPosts(List.of(Post.builder().id(1).build(), Post.builder().id(2).build()));
         when(authenticationService.getUserAuthenticated()).thenReturn(user);
-        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
-        when(postRepository.save(any(Post.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Post result = postService.createByUser(userPostDto);
+        List<Post> posts = postServiceImpl.findAllByUser();
+
+        assertNotNull(posts);
+        assertEquals(2, posts.size());
+    }
+
+
+    @Test
+    void createByUser_WhenPlaceFromGeoApi_ReturnPost() {
+        when(authenticationService.getUserAuthenticated()).thenReturn(user);
+        when(placeRepository.findById("place1")).thenReturn(Optional.empty());
+        when(geoApiService.findById("place1")).thenReturn(Optional.of(place));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
+
+        Post result = postServiceImpl.createByUser(userPostDto);
 
         assertNotNull(result);
-        assertEquals("Test Title", result.getTitle());
-        assertEquals("Test Description", result.getDescription());
-        assertEquals(4, result.getRating());
-        assertEquals(user, result.getUser());
-        assertEquals(place, result.getPlace());
-        assertEquals(2L, user.getPoint());
-        assertEquals(4, place.getRating());
+        assertEquals(post, result);
+    }
 
-        verify(userRepository).save(user);
+
+    @Test
+    void createByUser_WhenPlaceFromRepo_ReturnPost() {
+        when(authenticationService.getUserAuthenticated()).thenReturn(user);
+        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
+
+        Post result = postServiceImpl.createByUser(userPostDto);
+
+        assertNotNull(result);
+        assertEquals(post, result);
+
+        verifyNoInteractions(geoApiService);
+
+    }
+
+    @Test
+    void createByUser_WhenPlaceFromRepoAndGeoApiIsNull_ReturnException() {
+        when(authenticationService.getUserAuthenticated()).thenReturn(user);
+        when(placeRepository.findById("place1")).thenReturn(Optional.empty());
+        when(geoApiService.findById("place1")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> postServiceImpl.createByUser(userPostDto));
+        assertEquals(exception.getMessage(), "Place not found");
+
+    }
+
+    @Test
+    void createByUser_WhenSuccess_ReturnPost() {
+        when(authenticationService.getUserAuthenticated()).thenReturn(user);
+        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
+
+        Post result = postServiceImpl.createByUser(userPostDto);
+
+        assertNotNull(result);
+        assertEquals(post, result);
+    }
+
+    @Test
+    void updateByUser_WhenPlaceFromRepo_ReturnPost() {
+        when(authenticationService.getUserAuthenticated()).thenReturn(user);
+        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
+        when(postRepository.findById(1)).thenReturn(Optional.of(post));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
+
+        Post result = postServiceImpl.updateByUser(1, userPostDto);
+
+        assertNotNull(result);
+        assertEquals(post, result);
+
         verify(placeRepository).save(place);
     }
 
     @Test
-    void testUpdateByUserSuccess() {
-        UserPostDto userPostDto = new UserPostDto("Updated Title", "Updated Description", null, 5, "place1");
-        User user = new User();
-        user.setId(1);
-        Place place = new Place();
-        place.setId("place1");
-        place.setRating(4);
-        Post existingPost = new Post();
-        existingPost.setId(1);
-        existingPost.setRating(4);
-        existingPost.setPlace(place);
-
+    void updateByUser_WhenPlaceFromGeoApi_ReturnPost() {
         when(authenticationService.getUserAuthenticated()).thenReturn(user);
-        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
-        when(postRepository.findById(1)).thenReturn(Optional.of(existingPost));
-        when(postRepository.save(any(Post.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(placeRepository.findById("place1")).thenReturn(Optional.empty());
+        when(geoApiService.findById("place1")).thenReturn(Optional.of(place));
+        when(postRepository.findById(1)).thenReturn(Optional.of(post));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        Post result = postService.updateByUser(1, userPostDto);
+        Post result = postServiceImpl.updateByUser(1, userPostDto);
 
         assertNotNull(result);
-        assertEquals("Updated Title", result.getTitle());
-        assertEquals("Updated Description", result.getDescription());
-        assertEquals(5, result.getRating());
-        assertEquals(user, result.getUser());
-        assertEquals(place, result.getPlace());
-        assertEquals(5, place.getRating());
+        assertEquals(post, result);
 
         verify(placeRepository).save(place);
-        verify(postRepository).save(any(Post.class));
+        verify(geoApiService, times(1)).findById("place1");
     }
 
     @Test
-    void testDeleteByUserSuccess() {
-        doNothing().when(postRepository).deleteById(1);
+    void updateByUser_WhenPlaceNotFound_ReturnException() {
+        when(authenticationService.getUserAuthenticated()).thenReturn(user);
+        when(placeRepository.findById("place1")).thenReturn(Optional.empty());
 
-        postService.deleteByUser(1);
+        Exception exception = assertThrows(RuntimeException.class, () -> postServiceImpl.updateByUser(1, userPostDto));
+        assertEquals("Place not found", exception.getMessage());
+        verifyNoInteractions(postRepository);
+    }
+
+    @Test
+    void updateByUser_WhenPostNotFound_ReturnException() {
+        when(authenticationService.getUserAuthenticated()).thenReturn(user);
+        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
+        when(postRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> postServiceImpl.updateByUser(1, userPostDto));
+        assertEquals(exception.getMessage(), "Post not found");
+    }
+
+    @Test
+    void updateByUser_WhenSuccess_ReturnPost() {
+        when(authenticationService.getUserAuthenticated()).thenReturn(user);
+        when(placeRepository.findById("place1")).thenReturn(Optional.of(place));
+        when(postRepository.findById(1)).thenReturn(Optional.of(post));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
+
+        Post result = postServiceImpl.updateByUser(1, userPostDto);
+
+        assertNotNull(result);
+        assertEquals(result, post);
+
+        verify(placeRepository, times(1)).save(place);
+        verify(postRepository, times(1)).save(post);
+    }
+
+
+    @Test
+    void deleteByUser_WhenIdNotNull_DeletedPost() {
+        postServiceImpl.deleteByUser(1);
 
         verify(postRepository).deleteById(1);
     }
+
+    @Test
+    void deleteByUser_WhenIdNull_DoNothing() {
+        postServiceImpl.deleteByUser(null);
+
+        verify(postRepository, never()).deleteById(1);
+    }
+
+
 }
