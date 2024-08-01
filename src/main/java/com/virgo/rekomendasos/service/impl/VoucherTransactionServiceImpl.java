@@ -60,7 +60,11 @@ public class VoucherTransactionServiceImpl implements VoucherTransactionService 
     @Override
     public VoucherTransaction use(Integer id, Integer quantity) {
         VoucherTransaction voucherTransaction = findById(id);
+        if (voucherTransaction.getVoucherQuantity() < quantity) {
+            throw new IllegalArgumentException("Not enough vouchers available");
+        }
         voucherTransaction.setVoucherQuantity(voucherTransaction.getVoucherQuantity() - quantity);
         return updateById(id, VoucherTransactionConvert.toDTO(voucherTransaction));
     }
+
 }
