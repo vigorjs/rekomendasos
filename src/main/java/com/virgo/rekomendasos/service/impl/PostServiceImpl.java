@@ -6,10 +6,7 @@ import com.virgo.rekomendasos.model.meta.User;
 import com.virgo.rekomendasos.repo.PlaceRepository;
 import com.virgo.rekomendasos.repo.PostRepository;
 import com.virgo.rekomendasos.repo.UserRepository;
-import com.virgo.rekomendasos.service.AuthenticationService;
-import com.virgo.rekomendasos.service.CloudinaryService;
-import com.virgo.rekomendasos.service.PlaceService;
-import com.virgo.rekomendasos.service.PostService;
+import com.virgo.rekomendasos.service.*;
 import com.virgo.rekomendasos.utils.FileUploadUtil;
 import com.virgo.rekomendasos.utils.dto.PostDto;
 import com.virgo.rekomendasos.utils.dto.UserPostDto;
@@ -44,6 +41,9 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    @Autowired
+    private GeoApiService geoApiService;
+
     @Override
     @Transactional
     public Post create(PostDto obj) {
@@ -51,16 +51,7 @@ public class PostServiceImpl implements PostService {
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
         if (place == null) {
-            List<Place> places = placeService.getAllPlacesFromApi();
-            for (Place pl : places) {
-                if (pl.getId().equals(obj.getPlaceId())) {
-                    place = pl;
-                }
-            }
-        }
-
-        if (place == null) {
-            throw new RuntimeException("Place not found");
+            place = geoApiService.findById(obj.getPlaceId()).orElseThrow(() -> new RuntimeException("Place not found"));
         }
 
         user.setPoint(user.getPoint() + 2);
@@ -87,17 +78,10 @@ public class PostServiceImpl implements PostService {
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
         if (place == null) {
-            List<Place> places = placeService.getAllPlacesFromApi();
-            for (Place pl : places) {
-                if (pl.getId().equals(obj.getPlaceId())) {
-                    place = pl;
-                }
-            }
+            place = geoApiService.findById(obj.getPlaceId()).orElseThrow(() -> new RuntimeException("Place not found"));
+
         }
 
-        if (place == null) {
-            throw new RuntimeException("Place not found");
-        }
 
         user.setPoint(user.getPoint() + 2);
         userRepository.save(user);
@@ -178,16 +162,7 @@ public class PostServiceImpl implements PostService {
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
         if (place == null) {
-            List<Place> places = placeService.getAllPlacesFromApi();
-            for (Place pl : places) {
-                if (pl.getId().equals(obj.getPlaceId())) {
-                    place = pl;
-                }
-            }
-        }
-
-        if (place == null) {
-            throw new RuntimeException("Place not found");
+            place = geoApiService.findById(obj.getPlaceId()).orElseThrow(() -> new RuntimeException("Place not found"));
         }
 
         user.setPoint(user.getPoint() + 2);
@@ -196,7 +171,7 @@ public class PostServiceImpl implements PostService {
         place.setRating(place.getRating() + obj.getRating());
         placeRepository.save(place);
 
-        return Post.builder()
+        Post post = Post.builder()
                 .title(obj.getTitle())
                 .description(obj.getDescription())
                 .picture(obj.getPicture())
@@ -204,6 +179,8 @@ public class PostServiceImpl implements PostService {
                 .user(user)
                 .place(place)
                 .build();
+
+        return postRepository.save(post);
     }
 
     @Override
@@ -213,12 +190,7 @@ public class PostServiceImpl implements PostService {
         Place place = placeRepository.findById(obj.getPlaceId()).orElse(null);
 
         if (place == null) {
-            List<Place> places = placeService.getAllPlacesFromApi();
-            for (Place pl : places) {
-                if (pl.getId().equals(obj.getPlaceId())) {
-                    place = pl;
-                }
-            }
+            place = geoApiService.findById(obj.getPlaceId()).orElseThrow(() -> new RuntimeException("Place not found"));
         }
 
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));

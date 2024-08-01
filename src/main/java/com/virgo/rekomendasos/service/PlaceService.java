@@ -14,10 +14,10 @@ public interface PlaceService {
 
     void delete(String id);
 
-    List<Place> findAll(Integer limit); // <7>
+    List<Place> findAll(); // <7>
 
-    List<Place> findAllPopularPlaces(Integer limit);
+    List<Place> findAllPublicPlace(Integer limit, String search);
 
-    List<Place> getAllPlacesFromApi();
+    List<Place> findAllPopularPublicPlaces(Integer limit, String search);
 
 }
