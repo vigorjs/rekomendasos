@@ -38,7 +38,6 @@ public class VoucherTransactionRepositoryTest {
         Voucher voucher1 = Voucher.builder()
                 .name("Voucher 1")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher1);
         VoucherTransaction voucherTransaction = VoucherTransaction.builder()
@@ -65,7 +64,6 @@ public class VoucherTransactionRepositoryTest {
         Voucher voucher1 = Voucher.builder()
                 .name("Voucher 1")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher1);
         VoucherTransaction voucherTransaction = VoucherTransaction.builder()
@@ -85,7 +83,6 @@ public class VoucherTransactionRepositoryTest {
         Voucher voucher2 = Voucher.builder()
                 .name("Voucher 2")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher2);
         VoucherTransaction voucherTransaction2 = VoucherTransaction.builder()
@@ -113,7 +110,6 @@ public class VoucherTransactionRepositoryTest {
         Voucher voucher1 = Voucher.builder()
                 .name("Voucher 1")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher1);
         VoucherTransaction voucherTransaction = VoucherTransaction.builder()
@@ -140,7 +136,6 @@ public class VoucherTransactionRepositoryTest {
         Voucher voucher1 = Voucher.builder()
                 .name("Voucher 1")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher1);
         VoucherTransaction voucherTransaction = VoucherTransaction.builder()
@@ -179,7 +174,6 @@ public class VoucherTransactionRepositoryTest {
         Voucher voucher1 = Voucher.builder()
                 .name("Voucher 1")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher1);
         VoucherTransaction voucherTransaction = VoucherTransaction.builder()

@@ -1,5 +1,6 @@
 package com.virgo.rekomendasos.model.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Voucher {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+    @OneToOne(mappedBy = "voucher", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private VoucherStock voucherStock;
 }

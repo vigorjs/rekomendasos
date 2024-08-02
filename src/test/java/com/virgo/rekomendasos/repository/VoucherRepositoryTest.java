@@ -23,7 +23,6 @@ public class VoucherRepositoryTest {
         Voucher voucher = Voucher.builder()
                 .name("Makan Gratis")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher);
 
@@ -37,12 +36,10 @@ public class VoucherRepositoryTest {
         Voucher voucher1 = Voucher.builder()
                 .name("Voucher 1")
                 .price(10000)
-                .quantity(10)
                 .build();
         Voucher voucher2 = Voucher.builder()
                 .name("Voucher 2")
                 .price(20000)
-                .quantity(20)
                 .build();
         voucherRepository.save(voucher1);
         voucherRepository.save(voucher2);
@@ -58,7 +55,6 @@ public class VoucherRepositoryTest {
         Voucher voucher = Voucher.builder()
                 .name("Voucher 1")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher);
 
@@ -72,7 +68,6 @@ public class VoucherRepositoryTest {
         Voucher voucher = Voucher.builder()
                 .name("Voucher 1")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher);
 
@@ -91,7 +86,6 @@ public class VoucherRepositoryTest {
         Voucher voucher = Voucher.builder()
                 .name("Voucher 1")
                 .price(10000)
-                .quantity(10)
                 .build();
         voucherRepository.save(voucher);
 

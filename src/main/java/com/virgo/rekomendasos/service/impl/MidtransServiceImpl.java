@@ -8,6 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.Objects;
+
 @Service
 public class MidtransServiceImpl implements MidtransService {
 
@@ -24,8 +26,6 @@ public class MidtransServiceImpl implements MidtransService {
 
     @Override
     public MidtransResponseDTO chargePayment(MidtransRequestDTO req) {
-
-        try {
             var midtransResponseDto = restClient.post()
                     .uri(midtransApiUrl+"charge")
                     .headers(httpHeaders -> httpHeaders.addAll(headers))
@@ -34,11 +34,10 @@ public class MidtransServiceImpl implements MidtransService {
                     .body(MidtransResponseDTO.class);
 
             assert midtransResponseDto != null;
-            return midtransResponseDto;
-
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+            if (midtransResponseDto.getStatus_code().equals("200") || midtransResponseDto.getStatus_code().equals("201")){
+                return midtransResponseDto;
+            }
+            throw new IllegalArgumentException(midtransResponseDto.getStatus_message());
     }
 
     @Override

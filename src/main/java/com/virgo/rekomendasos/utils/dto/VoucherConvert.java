@@ -7,7 +7,7 @@ public class VoucherConvert {
         return VoucherDTO.builder()
                 .name(voucher.getName())
                 .price(voucher.getPrice() > 0 ? voucher.getPrice() : 0)
-                .quantity(voucher.getQuantity() > 0 ? voucher.getQuantity() : 0)
+                .quantity(voucher.getVoucherStock() != null ? voucher.getVoucherStock().getQuantity() : 0)
                 .build();
     }
 }

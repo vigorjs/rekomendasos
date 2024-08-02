@@ -122,7 +122,7 @@ public class LogTransactionServiceImpl implements LogTransactionService {
 
     public void updateLogTransactionStatus(Long id, LogTransactionDto obj) {
         boolean flag = false;
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 120; i++) {
             try {
                 MidtransResponseDTO response = midtransService.getStatus(obj.getOrderId());
 
@@ -139,9 +139,9 @@ public class LogTransactionServiceImpl implements LogTransactionService {
                 log.error("error in updateTransactionStatus() {}", e.getMessage());
             }
         }
-        log.info("Exiting updateTransactionStatus()");
         if (!flag){
-            midtransService.changeStatus(obj.getOrderId(), String.valueOf(TransactionStatus.failure));
+            midtransService.changeStatus(obj.getOrderId(), String.valueOf(TransactionStatus.cancel));
         }
+        log.info("Exiting updateTransactionStatus()");
     }
 }

@@ -1,10 +1,8 @@
 spring:
   datasource:
-#    url: jdbc:postgresql://localhost:5432/java_todo_db?createDatabaseIfNotExist=true
-    url: jdbc:postgresql://localhost:5432/rekomendasos_db
-    username: postgres
-    password: postgres
-#    password: Batassuci123#
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,41 +13,47 @@ spring:
     database: postgresql
   application:
     name: rekomendasos
+  cache:
+    type: redis
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
 application:
   security:
     jwt:
-      secret-key: 743777217A25432A462D4A614E635266556A586E3272357538782F413F442847
-      expiration: 86400000 # a day
+      secret-key: ${JWT_SECRET_KEY}
+      expiration: ${JWT_EXPIRATION}
       refresh-token:
-        expiration: 604800000 # 7 days
+        expiration: ${JWT_REFRESH_EXPIRATION}
 
 midtrans:
-  server-key: SB-Mid-server-uqKv7R52RROgL1I0AX_DOcI6
-  api-url: https://api.sandbox.midtrans.com/v2/
+  server-key: ${MIDTRANS_SERVER_KEY}
+  api-url: ${MIDTRANS_API_URL}
 
 server:
-  port: 8088
+  port: 8080
 
 bezkoder:
   openapi:
     dev-url: http://localhost:8088
     prod-url: https://localhost:8080
 
-
 logging:
-    level:
-        org:
-        springframework:
-            security: DEBUG
-            web: DEBUG
-            data: DEBUG
-            hibernate: DEBUG
-            jpa: DEBUG
-            sql: DEBUG
-            jwt: DEBUG
-            bezkoder: DEBUG
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        web: DEBUG
+        data: DEBUG
+        hibernate: DEBUG
+        jpa: DEBUG
+        sql: DEBUG
+        jwt: DEBUG
+        bezkoder: DEBUG
+
 cloudinary:
-  cloud_name: dw1lc8ynz
-  api_key: 543951964988986
-  api_secret: jl6mqzc8755R2nBAAiEweEqzP94
+  cloud_name: ${CLOUDINARY_CLOUD_NAME}
+  api_key: ${CLOUDINARY_API_KEY}
+  api_secret: ${CLOUDINARY_API_SECRET}
