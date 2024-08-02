@@ -100,7 +100,11 @@ public class VoucherTransactionServiceImpl implements VoucherTransactionService 
     @CachePut(value = "voucherTransactions", key = "#id")
     public VoucherTransaction use(Integer id, Integer quantity) {
         VoucherTransaction voucherTransaction = findById(id);
+        if (voucherTransaction.getVoucherQuantity() < quantity) {
+            throw new IllegalArgumentException("Not enough vouchers available");
+        }
         voucherTransaction.setVoucherQuantity(voucherTransaction.getVoucherQuantity() - quantity);
         return updateById(id, VoucherTransactionConvert.toDTO(voucherTransaction));
     }
+
 }

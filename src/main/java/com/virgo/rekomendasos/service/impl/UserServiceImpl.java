@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<User> getAll(Pageable pageable, String name) {
-//        User currentUser = authenticationService.getUserAuthenticated();
         Specification<User> spec = UserSpecification.getSpecification(name);;
         return userRepository.findAll(spec, pageable);
     }
