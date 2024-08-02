@@ -14,21 +14,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@RestControllerAdvice
 @Tag(name = "Voucher", description = "Voucher management APIs")
 public class VoucherController {
 
-    //    @Autowired
     private final VoucherService voucherService;
     private final VoucherTransactionService voucherTransactionService;
 
@@ -45,7 +45,6 @@ public class VoucherController {
         Page<Voucher> voucherPage = voucherService.findAll(pageable);
         PaginationResponse<Voucher> res = new PaginationResponse<>(voucherPage);
         return Response.renderJSON(res);
-
     }
 
     @Operation(summary = "Get voucher by id", security = @SecurityRequirement(name = "bearerAuth"))
@@ -70,7 +69,8 @@ public class VoucherController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @PostMapping("/admin/vouchers")
-    public ResponseEntity<?> create(@RequestBody VoucherDTO voucherDTO) {
+    @Validated
+    public ResponseEntity<?> create(@Valid @RequestBody VoucherDTO voucherDTO) {
         return Response.renderJSON(voucherService.create(voucherDTO));
     }
 
@@ -83,7 +83,8 @@ public class VoucherController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @PutMapping("/admin/vouchers/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody VoucherDTO voucherDTO) {
+    @Validated
+    public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody VoucherDTO voucherDTO) {
         return Response.renderJSON(voucherService.updateById(id, voucherDTO));
     }
 

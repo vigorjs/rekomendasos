@@ -1,11 +1,14 @@
 package com.virgo.rekomendasos.service.impl;
 
+import com.virgo.rekomendasos.model.enums.Role;
+import com.virgo.rekomendasos.model.meta.User;
 import com.virgo.rekomendasos.model.meta.VoucherTransaction;
 import com.virgo.rekomendasos.repo.VoucherTransactionRepository;
 import com.virgo.rekomendasos.service.AuthenticationService;
 import com.virgo.rekomendasos.service.UserService;
 import com.virgo.rekomendasos.service.VoucherService;
 import com.virgo.rekomendasos.service.VoucherTransactionService;
+import com.virgo.rekomendasos.utils.dto.RegisterRequestDTO;
 import com.virgo.rekomendasos.utils.dto.VoucherTransactionConvert;
 import com.virgo.rekomendasos.utils.dto.VoucherTransactionDTO;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +26,11 @@ public class VoucherTransactionServiceImpl implements VoucherTransactionService 
 
     @Override
     public VoucherTransaction create(VoucherTransactionDTO newVoucherTransaction) {
-        // Kurang pengurangan point jika user take voucher
+        userService.update(
+                RegisterRequestDTO
+                        .builder()
+                        .build()
+        ); // Update: point user yang sedang login di kurangi
         return voucherTransactionRepository.save(
                 VoucherTransaction.builder()
                         .user(authenticationService.getUserAuthenticated())
@@ -34,8 +41,15 @@ public class VoucherTransactionServiceImpl implements VoucherTransactionService 
     }
 
     @Override
-    public Page<VoucherTransaction> findAll(Pageable pageable) {
-        return voucherTransactionRepository.findAll(pageable);
+    public Page<VoucherTransaction> findAll(Pageable pageable) {Page<VoucherTransaction> voucherTransactionPage = voucherTransactionRepository.findAll(pageable);
+        return voucherTransactionPage.map(voucherTransaction -> {
+            User user = new User();
+            user.setId(voucherTransaction.getUser().getId());
+            user.setEmail(voucherTransaction.getUser().getEmail());
+            user.setRole(Role.USER);
+            voucherTransaction.setUser(user);
+            return voucherTransaction;
+        });
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.virgo.rekomendasos.model.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -50,7 +50,7 @@ public class PostRepositoryTest {
                 .user(user)
                 .place(place)
                 .description("deskripsi")
-                .rating(10)
+                .rating(5)
                 .picture("kosong")
                 .build();
         postRepository.save(post);
@@ -83,7 +83,7 @@ public class PostRepositoryTest {
                 .user(user)
                 .place(place)
                 .description("deskripsi")
-                .rating(10)
+                .rating(5)
                 .picture("kosong")
                 .build();
         postRepository.save(post);
@@ -108,7 +108,7 @@ public class PostRepositoryTest {
                 .user(user2)
                 .place(place2)
                 .description("deskripsi")
-                .rating(10)
+                .rating(5)
                 .picture("kosong")
                 .build();
         postRepository.save(post2);
@@ -142,7 +142,7 @@ public class PostRepositoryTest {
                 .user(user)
                 .place(place)
                 .description("deskripsi")
-                .rating(10)
+                .rating(5)
                 .picture("kosong")
                 .build();
         postRepository.save(post);
@@ -175,7 +175,7 @@ public class PostRepositoryTest {
                 .user(user)
                 .place(place)
                 .description("deskripsi")
-                .rating(10)
+                .rating(5)
                 .picture("kosong")
                 .build();
         postRepository.save(post);
@@ -213,7 +213,7 @@ public class PostRepositoryTest {
                 .user(user)
                 .place(place)
                 .description("deskripsi")
-                .rating(10)
+                .rating(5)
                 .picture("kosong")
                 .build();
         postRepository.save(post);

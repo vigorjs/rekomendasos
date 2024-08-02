@@ -16,7 +16,6 @@ public class VoucherTransactionDTO {
     @NotBlank(message = "Voucher must no be blank")
     private Integer voucherId;
 
-    @NotBlank(message = "Voucher must no be blank")
     @Min(value = 0, message = "Voucher Quantity cannot be a negative value")
     private Integer voucherQuantity;
 }

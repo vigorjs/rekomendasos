@@ -6,7 +6,6 @@ import com.virgo.rekomendasos.repo.VoucherRepository;
 import com.virgo.rekomendasos.repo.VoucherTransactionRepository;
 import com.virgo.rekomendasos.service.AuthenticationService;
 import com.virgo.rekomendasos.service.VoucherService;
-import com.virgo.rekomendasos.utils.dto.VoucherConvert;
 import com.virgo.rekomendasos.utils.dto.VoucherDTO;
 import com.virgo.rekomendasos.utils.specification.VoucherTransactionSpecification;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +38,11 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Page<Voucher> findAll(Pageable pageable) {
-        return voucherRepository.findAll(pageable);
+        Page<Voucher> voucherPage = voucherRepository.findAll(pageable);
+        if (voucherPage.getNumberOfElements() == 0) {
+            throw new RuntimeException("Voucher Not Found");
+        }
+        return voucherPage;
     }
 
     @Override

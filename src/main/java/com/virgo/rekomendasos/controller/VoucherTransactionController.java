@@ -1,5 +1,6 @@
 package com.virgo.rekomendasos.controller;
 
+import com.virgo.rekomendasos.model.meta.User;
 import com.virgo.rekomendasos.model.meta.VoucherTransaction;
 import com.virgo.rekomendasos.service.VoucherTransactionService;
 import com.virgo.rekomendasos.utils.dto.VoucherTransactionDTO;
@@ -13,11 +14,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Voucher Transaction", description = "Voucher Transaction management APIs")
 public class VoucherTransactionController {
 
-    //    @Autowired
     private final VoucherTransactionService voucherTransactionService;
 
     @Operation(summary = "Get all voucher transactions", security = @SecurityRequirement(name = "bearerAuth"))
@@ -67,7 +69,8 @@ public class VoucherTransactionController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @PostMapping("/admin/voucher_transactions")
-    public ResponseEntity<?> create(@RequestBody VoucherTransactionDTO request) {
+    @Validated
+    public ResponseEntity<?> create(@Valid @RequestBody VoucherTransactionDTO request) {
         return Response.renderJSON(voucherTransactionService.create(request));
     }
 
@@ -80,7 +83,8 @@ public class VoucherTransactionController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
     @PutMapping("/admin/voucher_transactions/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody VoucherTransactionDTO request) {
+    @Validated
+    public ResponseEntity<?> update(@PathVariable Integer id,@Valid @RequestBody VoucherTransactionDTO request) {
         return Response.renderJSON(voucherTransactionService.updateById(id, request));
     }
 
@@ -107,7 +111,8 @@ public class VoucherTransactionController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content(schema = @Schema())})
     })
-    public ResponseEntity<?> createVoucherTransaction(@RequestBody VoucherTransactionDTO request) {
+    @Validated
+    public ResponseEntity<?> createVoucherTransaction(@Valid @RequestBody VoucherTransactionDTO request) {
         return Response.renderJSON(voucherTransactionService.create(request));
     }
 }
